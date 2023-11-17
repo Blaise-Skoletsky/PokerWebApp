@@ -13,12 +13,11 @@ var cardConversion = {
     13: 'K',
     14: 'A',
 }
+
+
 //Function takes in an array of cards in any order. Slowly looks down the line of poker hands
 function evaluatePokerHand(cards) {
-    // Function to get the value of a card, considering Ace as 14
-    function cardValue(card) {
-        return card[0] !== 14 ? card[0] : 14;
-    }
+
 
     // Function to check if all cards have the same suit
     function isFlush() {
@@ -44,8 +43,11 @@ function evaluatePokerHand(cards) {
     }
 
     // Sort the cards in descending order of their values
-    const sortedCards = cards.slice().sort((a, b) => cardValue(b) - cardValue(a));
+    const sortedCards = cards.slice().sort((a, b) => (b) - (a));
   
+
+
+    //Makes a dictionary filled with the number mapped to the amount of times it is in the hand. 
     cardCounts = {}
     for (let i = 0; i < sortedCards.length; i++){
         if (sortedCards[i][0] in cardCounts){
@@ -58,7 +60,7 @@ function evaluatePokerHand(cards) {
     
     // Function to check if the cards form a straight
     function isStraight() {
-        const values = sortedCards.map(card => cardValue(card));
+        const values = sortedCards.map(card => (card));
         const uniqueValues = [...new Set(values)];
         const min = Math.min(...uniqueValues);
         const max = Math.max(...uniqueValues);
@@ -67,12 +69,12 @@ function evaluatePokerHand(cards) {
 
     // Check for a straight flush
     if (isFlush() && isStraight()) {
-        return ['straight flush', cardValue(sortedCards[0]), null];
+        return ['straight flush', (sortedCards[0]), null];
     }
 
     //Four of a kind
     for (const [key, value] of Object.entries(cardCounts)){
-        console.log([key, value])
+  
         if (value === 4){
             return ['four of a kind', parseInt(key), null]
         }
@@ -84,7 +86,6 @@ function evaluatePokerHand(cards) {
     thrice = [false, 0]
     twice = [false]
     for (const [key, value] of Object.entries(cardCounts)){
-        console.log([key, value])
         if (value === 3){
             if (thrice[1] === 1){
                 thrice = [true, thrice[1]+1, thrice[2], key]
@@ -106,12 +107,12 @@ function evaluatePokerHand(cards) {
 
     // Check for flush
     if (isFlush()) {
-        return ['flush', cardValue(sortedCards[0]), cardValue(sortedCards[1])];
+        return ['flush', sortedCards[0], sortedCards[1]];
     }
 
     // Check for straight
     if (isStraight()) {
-        return ['straight', cardValue(sortedCards[0]), null];
+        return ['straight', sortedCards[0], null];
     }
 
     // Check for three of a kind
@@ -122,25 +123,26 @@ function evaluatePokerHand(cards) {
         }
     }
     // Check for two pairs
-    if ((cardValue(sortedCards[0]) === cardValue(sortedCards[1]) && cardValue(sortedCards[2]) === cardValue(sortedCards[3]))
-        || (cardValue(sortedCards[0]) === cardValue(sortedCards[1]) && cardValue(sortedCards[3]) === cardValue(sortedCards[4]))
-        || (cardValue(sortedCards[1]) === cardValue(sortedCards[2]) && cardValue(sortedCards[3]) === cardValue(sortedCards[4]))) {
-        return ['two pairs', cardValue(sortedCards[0]), cardValue(sortedCards[3])];
+    if ((sortedCards[0] === sortedCards[1] && sortedCards[2] === sortedCards[3])
+        || (sortedCards[0] === sortedCards[1] && sortedCards[3] === sortedCards[4])
+        || (sortedCards[1] === sortedCards[2] && sortedCards[3] === sortedCards[4])) {
+        return ['two pairs', sortedCards[0], sortedCards[3]];
     }
 
 
     // Check for one pair
     for (let i = 0; i < 4; i++) {
-        if (cardValue(sortedCards[i]) === cardValue(sortedCards[i + 1])) {
-            return ['one pair', cardValue(sortedCards[i]), cardValue(sortedCards[4])];
+        if (sortedCards[i] === sortedCards[i + 1]) {
+            return ['one pair', sortedCards[i], sortedCards[4]];
         }
     }
 
     // If no specific hand is detected, return a default result
-    return ['high card', cardValue(sortedCards[0]), cardValue(sortedCards[1])];
+    return ['high card', sortedCards[0], sortedCards[1]];
 }
 
 // Example usage
 const cards = [[2, 'S'], [2, 'S'], [2, 'S'], [3, 'S'], [3, 'S'], [3, 'D'], [9, 'H']];
 const result = evaluatePokerHand(cards);
 console.log(result);
+
