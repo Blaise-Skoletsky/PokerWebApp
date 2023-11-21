@@ -107,12 +107,14 @@ function evaluatePokerHand(cards) {
 
     // Check for flush
     if (isFlush()) {
-        return ['flush', sortedCards[0], sortedCards[1]];
+        return ['flush', sortedCards[0], sortedCards[1], sortedCards[2], sortedCards[3], sortedCards[4]];
     }
 
-    // Check for straight
+    // Check for straight - NEED TO REWORD FOR 5432-ACE !!!!
     if (isStraight()) {
-        return ['straight', sortedCards[0], null];
+        
+
+        return ['straight'];
     }
 
     // Check for three of a kind
@@ -142,7 +144,7 @@ function evaluatePokerHand(cards) {
 }
 
 // Example usage
-const cards = [[2, 'S'], [2, 'S'], [2, 'S'], [3, 'S'], [3, 'S'], [3, 'D'], [9, 'H']];
+const cards = [[6, 'D'], [5, 'D'], [4, 'S'], [3, 'S'], [2, 'S'], [3, 'D'], [9, 'H']];
 const result = evaluatePokerHand(cards);
 console.log(result);
 
