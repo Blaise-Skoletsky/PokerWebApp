@@ -26,22 +26,36 @@ app.get('/client.js', function (req, res) {
 
 
 
-socketkeys = {}
-i = 0
+socketKeys = {}
 io.on('connection', socket => {
     console.log("socketID:", socket.id);
 
-    if (!(i in socketkeys)){
-        socketkeys[i] = socket.id
-        i++
+
+
+    //On connection, socketID is mapped to the 
+    if (!(socket.id in socketKeys)){
+        socketKeys[socket.id] = ['name', 500, 0, false, false, ['temp']]
     }
     
 
-    console.log(socketkeys)
+    console.log(socketKeys)
+
+
+    // Temporary function
     socket.on('clicked', function (data){
         console.log('found a click:', data);
+        //for (var item in socketKeys){
+        //    console.log(item + '  :  ' +  socketKeys[item] + ' : '+ socket.connected[socketKeys[item]])
+        //}
    
     })
+  
+
+    //Removes a socket when page is refreshed or closed. 
+    socket.on('disconnect', function(){
+        delete socketKeys[socket.id]
+    })
+
 
 
     
