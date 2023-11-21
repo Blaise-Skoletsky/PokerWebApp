@@ -31,7 +31,12 @@ let socketKeys = {}
 //global vars contains information about the whole table, like who is smallblind, bigblind, what the table bet is
 //what the progress of the flop is, ect. 
 let globalVars = {}
-
+globalVars['smallblind'] = 0
+globalVars['bigblind'] = 0
+globalVars['tablebet'] = 0
+globalVars['gameprogress'] = 'pre-flop'
+globalVars['currrentPlayer'] = 0
+globalVars['last_person_to_raise'] = 0
 
 //shows the progress of the ready-up
 let readyVal = 0
@@ -44,7 +49,7 @@ io.on('connection', socket => {
     }
 
 
-    
+
     console.log("socketID:", socket.id);
     console.log(socketKeys)
     
@@ -55,13 +60,24 @@ io.on('connection', socket => {
         if (readyVal === Object.keys(socketKeys).length){
             //Fire off the first turn happened, selecting a random player to start: 
 
+            socket.emit('turnStart', socketKeys, globalVars)
+
 
 
         }
     })
 
     //When a player moves, all their information should be put back into the global info system: the map of the keys
-    socket.on('turnEnd', function(arg, globalVars){
+    socket.on('turnEnd', function(arg, localVars){
+        globalVars = localVars
+        //if last person to raise is now the same person who is playing, end the phase, restart play at the small blind
+
+
+
+        //otherwise, send the new globalVars and arg back to each client and keep playing.
+
+
+
         console.log(arg)
         console.log(globalVars)
     })

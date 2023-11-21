@@ -12,10 +12,33 @@ var allPlayers = {}
 var localVars = 0
 
 //When any turn happens, this updates the variables: arg contains the dictionaries containing all information
-socket.on('turnHappened', function(arg, mysockettID, globalVars){
+socket.on('turnStart', function(arg, mysockettID, globalVars){
 
     allPlayers = arg
     localVars = globalVars
+    //Graphical information should update, player who's turn it is should be highlighted
+    if (localVars.gameprogess === 'pre-flop'){
+        //display cards
+    }
+    else if (localVars.gameprogess === 'flop'){
+        //display cards
+    }
+    else if (localVars.gameprogess === 'turn'){
+        //display cards
+    }
+    else if (localVars.gameprogess === 'river'){
+        //display cards
+    }
+    else if (localVars.gameprogess === 'declare-winner'){
+        //at this point the localVars should contain a winner value, display it along with graphical changes.
+
+    }
+
+
+    if (localVars.currentPlayer === mysockettID){
+        // Unhide the buttons, allow them to play
+    }
+
 
 
 })
@@ -25,6 +48,8 @@ callButton.addEventListener('click', function(){
 
     //Set turn to false
     arg.mysockettID[3] = false
+
+    //after checking, check to see if the game would end, if it does change the gameprogress var to 'declare-winner'
     socket.emit('turnEnd', arg, localVars)
 
 })
