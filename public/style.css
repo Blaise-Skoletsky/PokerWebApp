@@ -1,0 +1,141 @@
+/* Reset some default styles */
+body, h1, h2, h3, p, ul, li {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    background-color: #35424a;
+}
+
+header {
+    background-color: #263238; 
+    color: #fff;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+}
+
+.header-image-container img {
+    max-width: 80px;
+    height: auto;
+}
+
+.site-title a {
+    text-decoration: none;
+    color: #fff;
+    font-family: 'Roboto Slab';
+    font-size: 48px; 
+    font-weight: 500;
+    margin-left: 15px;
+}
+
+#opponents {
+    display: flex;
+    flex-wrap: wrap; /* Allow opponents to wrap to the next line */
+    justify-content: center;
+}
+
+.opponent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 160px;
+    width: 120px;
+    margin: 10px;
+    padding: 10px;
+    border: 5px solid #37474f; 
+    border-radius: 8px;
+    background-color: #546e7a; 
+}
+
+.player-contents {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.player-image-container {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.player-image-container img {
+    max-height: 80px;
+    width: auto;
+}
+
+.player-info-container {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.player-info-box {
+    flex: 1;
+    width: 95%;
+    height: 70%;
+    text-align: center;
+    border: 3px solid #263238; 
+    border-radius: 10px;
+    background-color: #fff; 
+    margin: 5px;
+}
+
+.player-name,
+.money-made {
+    size: 12px;
+    display: inline-block;
+    margin: auto;
+    color: #263238; 
+}
+
+.table {
+    position: relative;
+    max-width: 80%;
+    max-height: 60%;
+    justify-content: center;
+    padding-top: 10px;
+    margin: auto;
+    text-align: center;
+}
+
+
+.person-player-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+.person-player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 160px;
+    width: 120px;
+    margin: 10px;
+    padding: 10px;
+    border: 5px solid #37474f; 
+    border-radius: 8px;
+    background-color: #546e7a; 
+}
+
+.player-controls {
+    margin-top: 5px;
+    display: flex; 
+    justify-content: space-around;
+    padding: 10px;
+}
+
+.person-player button {
+    margin: 1px;
+}

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Poker</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/client.js" type="module" charset="utf-8" defer></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="header-image-container">
+            <img src="logo.jpeg" alt="Poker logo">
+        </div>
+        <h1 class="site-title"><a href="#">Poker Web App</a></h1>
+    </header>
+
+    <main>
+        <section id="opponents" class="opponents-row">
+            <div class="opponent">
+                <div class="player-contents">
+                    <div class="player-image-container">
+                        <img src="card-back.png" alt="Card 1">
+                        <img src="card-back.png" alt="Card 2">
+                    </div>
+                    <div class="player-info-container">
+                        <div class="player-info-box">
+                            <a class="player-name">Player Name</a>
+                            <span class="money-made">$0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="table">
+            <img src="table.png" alt="Poker Table">
+        </div>
+
+        <div class="person-player-row">
+            <div class="person-player">
+                <div class="player-contents">
+                    <div class="player-image-container">
+                        <img src="card-back.png" alt="Card 1">
+                        <img src="card-back.png" alt="Card 2">
+                    </div>
+                    <div class="player-info-container">
+                        <div class="player-info-box">
+                            <a class="player-name">Your Name</a>
+                            <span class="money-made">$0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="player-controls">
+                    <button>Call</button>
+                    <button>Raise</button>
+                    <button>Fold</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
