@@ -31,7 +31,7 @@ let socketKeys = {}
 //global vars contains information about the whole table, like who is smallblind, bigblind, what the table bet is
 //what the progress of the flop is, ect. 
 let globalVars = {'smallblind': 0,
-                  'bigblind': 0, 
+                  'bigblind': 1, 
                   'table_bet': 0, 
                   'game_progress': 'pre-flop', 
                   'current_player': 0, 
@@ -56,9 +56,10 @@ io.on('connection', socket => {
         socketKeys[socket.id] = {'name': 'temp', 
                                 'total_money': 500,
                                 'current_bet': 0,
-                                'is_playing': false,
+                                'is_playing': true,
                                 'is_turn': false,
                                 'hand': [null]}
+
         turnPath.push([0, socket.id])
         for (let i = 0; i < turnPath.length; i++){
             turnPath[i][0] = i + 1
@@ -83,7 +84,17 @@ io.on('connection', socket => {
 //
         //}
         console.log('turn start')
-        socketKeys[socket.id].is_turn = true
+        globalVars.smallblind++
+        globalVars.bigblind++
+        for (let i = 0; i < turnPath.length; i++){
+            //TO FUTURE ME: Sometimes turnpath of i+2
+            //is out of the array, so make it circullar.
+            if (turnPath[i][0] === globalVars.smallblind){
+                socketKeys[turnPath[i+2][1]].is_turn = true
+
+            }
+        }
+
         socket.emit('turnStart', socketKeys, globalVars)
 
     })
@@ -94,11 +105,9 @@ io.on('connection', socket => {
         globalVars = localVars
         //if last person to raise is now the same person who is playing, end the phase, restart play at the small blind
 
-        console.log(socketKeys[socket.id].name)
 
         //otherwise, send the new globalVars and arg back to each client and keep playing.
 
-        console.log(arg)
     })
 
 

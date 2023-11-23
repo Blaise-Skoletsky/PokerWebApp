@@ -13,7 +13,48 @@ var cardConversion = {
     13: 'K',
     14: 'A',
 }
+function getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
+  }
+  
+//Generates a fresh deck
+function generateDeck(){
+    deck = []
+    suits = ['S', 'H', 'D', 'C']
+    for (let i = 2; i < 15; i++){
+        for (let j = 0; j < 4; j++){
+            deck.push([i, suits[j]])
+        }
+    }
 
+    return deck
+}
+//Makes deck
+deck = generateDeck()
+
+//Generates 5 global cards
+function centerGenerator(deck){
+    centerCards = []
+    for (let i = 0; i < 5; i++){
+        card1 = getRandomIntInclusive(0, deck.length-1)
+        centerCards.push(deck[card1])
+        deck.splice(card1, 1) 
+    }
+}
+
+//Generates 2 cards per hand
+function playerHandGenerator(deck){
+    handCards = []
+    for (let i = 0; i < 2; i++){
+        card1 = getRandomIntInclusive(0, deck.length-1)
+        handCards.push(deck[card1])
+        deck.splice(card1, 1) 
+    }
+}
+
+centerGenerator(deck)
 
 //Function takes in an array of cards in any order. Slowly looks down the line of poker hands
 function evaluatePokerHand(cards) {
@@ -145,6 +186,6 @@ function evaluatePokerHand(cards) {
 
 // Example usage
 const cards = [[6, 'D'], [5, 'D'], [4, 'S'], [3, 'S'], [2, 'S'], [3, 'D'], [9, 'H']];
-const result = evaluatePokerHand(cards);
-console.log(result);
+//const result = evaluatePokerHand(cards);
+//console.log(result);
 
