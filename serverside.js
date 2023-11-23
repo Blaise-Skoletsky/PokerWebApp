@@ -15,7 +15,7 @@ app.use('/socket.io-client', express.static(path.join(__dirname, 'node_modules/s
 
 // Serve your HTML file when accessing the root URL
 app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, '/public/play.html'));
+    res.sendFile(path.join(__dirname, '/public/index.html'));
 });
 
 // Serve client.js file
