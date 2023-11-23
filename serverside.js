@@ -56,7 +56,7 @@ io.on('connection', socket => {
         socketKeys[socket.id] = {'name': 'temp', 
                                 'total_money': 500,
                                 'current_bet': 0,
-                                'is_playing': true,
+                                'is_playing': false,
                                 'is_turn': false,
                                 'hand': [null]}
 
@@ -74,7 +74,8 @@ io.on('connection', socket => {
 
     //Function starts the game, once all players have said they are ready, it shoots off the first 'turnhappend' event to the client
     socket.on('allready', function(){
-        readyVal++ 
+        
+        //readyVal++ 
         //if (readyVal === Object.keys(socketKeys).length){
         //    //Fire off the first turn happened, selecting a random player to start: 
 //
@@ -83,15 +84,39 @@ io.on('connection', socket => {
 //
 //
         //}
-        console.log('turn start')
-        globalVars.smallblind++
-        globalVars.bigblind++
+        //If there are more than 6 players, they will be set to false and can only spectate. 
         for (let i = 0; i < turnPath.length; i++){
-            //TO FUTURE ME: Sometimes turnpath of i+2
-            //is out of the array, so make it circullar.
-            if (turnPath[i][0] === globalVars.smallblind){
-                socketKeys[turnPath[i+2][1]].is_turn = true
+            if (i < 6){
+                socketKeys[turnPath[i][1]].is_playing = true
+            }
+        }
+    
+        //Hopefully this works, if smallblind is ever at the last player, when it increments it circles back to 1
+        globalVars.smallblind++
+        if (globalVars.smallblind > turnPath.length || globalVars.smallblind > 6){
+            globalVars.smallblind = 1
+        }
 
+
+         //Hopefully this works, if bigblind is ever at the last player, when it increments it circles back to 1
+        globalVars.bigblind++
+        if (globalVars.bigblind > turnPath.length || globalVars.bigblind > 6){
+            globalVars.bigblind = 1
+        }
+
+
+        for (let i = 0; i < turnPath.length; i++){
+            //TO FUTURE ME: Might be an error in the if statements, hopefulyl acts as circular. 
+
+            if (turnPath[i][0] === globalVars.bigblind){
+                if (i === turnPath.length || i > 6){
+                    turnPath[0][1].is_turn = true 
+                    break
+                }
+                else{
+                    socketKeys[turnPath[i+1][1]].is_turn = true
+                    break
+                }
             }
         }
 

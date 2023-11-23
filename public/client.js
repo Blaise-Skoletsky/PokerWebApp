@@ -20,9 +20,6 @@ socket.on('turnStart', function(arg, globalVars){
     allPlayers = arg
     localVars = globalVars
 
-    allPlayers[socket.id].name = 'Blaise'
-    console.log(allPlayers)
-
     socket.emit('turnEnd', allPlayers, localVars )
 
     //Graphical information should update, player who's turn it is should be highlighted
@@ -38,11 +35,6 @@ socket.on('turnStart', function(arg, globalVars){
     else if (localVars.game_progess === 'river'){
         //display cards
     }
-    else if (localVars.game_progess === 'declare-winner'){
-        //at this point the localVars should contain a winner value, display it along with graphical changes.
-
-    }
-
 
     if (localVars.currentPlayer === socket.id){
         // Unhide the buttons, allow them to play
