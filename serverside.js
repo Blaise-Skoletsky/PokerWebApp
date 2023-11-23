@@ -35,7 +35,7 @@ let globalVars = {'smallblind': 0,
                   'table_bet': 0, 
                   'game_progress': 'pre-flop', 
                   'current_player': 0, 
-                  'last_person_to_raise': 0}
+                  'last_person_to_raise': 1}
 
 
 //Array for turn paths! Every game should shift by 1: each index is [turn1, socket]
