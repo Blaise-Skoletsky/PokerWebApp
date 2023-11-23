@@ -31,6 +31,11 @@ let socketKeys = {}
 //global vars contains information about the whole table, like who is smallblind, bigblind, what the table bet is
 //what the progress of the flop is, ect. 
 let globalVars = {}
+
+
+//Array for turn paths! Every game should shift by 1: each index is [turn1, socket]
+let turnPath = []
+
 globalVars['smallblind'] = 0
 globalVars['bigblind'] = 0
 globalVars['tablebet'] = 0
@@ -41,17 +46,26 @@ globalVars['last_person_to_raise'] = 0
 //shows the progress of the ready-up
 let readyVal = 0
 
+//Number of players
+let numPlayers = 0
+
+
 io.on('connection', socket => {
 
     //On connection, socketID is mapped to the 
     if (!(socket.id in socketKeys)){
         socketKeys[socket.id] = ['name', 500, 0, false, false, ['temp']]
+        turnPath.push([0, socket.id])
+        for (let i = 0; i < turnPath.length; i++){
+            turnPath[i][0] = i + 1
+        }
     }
 
 
 
     console.log("socketID:", socket.id);
     console.log(socketKeys)
+    console.log(turnPath)
     
 
     //Function starts the game, once all players have said they are ready, it shoots off the first 'turnhappend' event to the client
@@ -87,6 +101,13 @@ io.on('connection', socket => {
 
     //Removes a socket when page is refreshed or closed. 
     socket.on('disconnect', function(){
+        for (let i = 0; i < turnPath.length; i++){
+            if (turnPath[i][1] === socket.id){
+                //turnPath.splice(i, i)
+                turnPath = turnPath.filter(item => item && item[1] !== socket.id);
+            }
+        }
+
         delete socketKeys[socket.id]
     })
 
