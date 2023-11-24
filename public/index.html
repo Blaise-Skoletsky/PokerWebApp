@@ -6,8 +6,8 @@
     <script src="/socket.io/socket.io.js"></script>
     
     <!-- I don't really understand the type="module" so I commented it out for now to test out the raise-button -->
-    <!-- <script src="client.js" type="module" charset="utf-8" defer></script>-->
-    <script src="client.js" charset="utf-8" defer></script>
+    <script src="client.js" type="module" charset="utf-8" defer></script>
+    <!--<script src="client.js" charset="utf-8" defer></script>-->
 
 
     <link rel="stylesheet" href="style.css">
@@ -32,7 +32,7 @@
                     <div class="player-info-container">
                         <div class="player-info-box">
                             <a class="player-name">Player Name</a>
-                            <span class="money-made">$0</span>
+                            <span class="money-count">$0</span>
                         </div>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                     <div class="player-info-container">
                         <div class="player-info-box">
                             <a class="player-name">Player Name</a>
-                            <span class="money-made">$0</span>
+                            <span class="money-count">$0</span>
                         </div>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                     <div class="player-info-container">
                         <div class="player-info-box">
                             <a class="player-name">Player Name</a>
-                            <span class="money-made">$0</span>
+                            <span class="money-count">$0</span>
                         </div>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
                     <div class="player-info-container">
                         <div class="player-info-box">
                             <a class="player-name">Player Name</a>
-                            <span class="money-made">$0</span>
+                            <span class="money-count">$0</span>
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,7 @@
                     <div class="player-info-container">
                         <div class="player-info-box">
                             <a class="player-name">Player Name</a>
-                            <span class="money-made">$0</span>
+                            <span class="money-count">$0</span>
                         </div>
                     </div>
                 </div>
@@ -116,8 +116,8 @@
             <div class="person-player">
                 <div class="player-contents">
                     <div class="player-image-container">
-                        <img src="card-back.png" alt="Card 1">
-                        <img src="card-back.png" alt="Card 2">
+                        <img id='mc1'src="card-back.png" alt="Card 1">
+                        <img id='mc2'src="card-back.png" alt="Card 2">
                     </div>
                     <div class="player-info-container">
                         <div class="player-info-box">

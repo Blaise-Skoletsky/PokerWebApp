@@ -8,6 +8,8 @@ const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 const io = socketIo(server, {cors: {origin: "http://localhost:3000"}});
 
+const poker = require('./poker.js')
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/socket.io-client', express.static(path.join(__dirname, 'node_modules/socket.io-client/dist')));
@@ -35,7 +37,8 @@ let globalVars = {'smallblind': -1,
                   'table_bet': 0, 
                   'game_progress': 'pre-flop', 
                   'current_player': 0, 
-                  'last_person_to_raise': 0}
+                  'last_person_to_raise': 0,
+                  'center': []}
 
 
 //Array for turn paths! Every game should shift by 1: each index is [turn1, socket]
@@ -108,18 +111,21 @@ io.on('connection', socket => {
             //TO FUTURE ME: Might be an error in the if statements, hopefulyl acts as circular. 
 
             if (turnPath[i][0] === globalVars.bigblind){
-                if (i === turnPath.length || i > 5){
-                    socketKeys[turnPath[0][1]].is_turn = true
+                if (turnPath[i][0] === globalVars.bigblind) {
+                    const nextPlayerIndex = (i + 1) % turnPath.length
+            
+                    socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
                     break
-                    
-                }
-                else{
-                    socketKeys[turnPath[i+1][1]].is_turn = true
-                    break
-                    
                 }
             }
         }
+
+        gameDeck = poker.generateDeck()
+        globalVars.center = poker.centerGenerator(gameDeck)
+        for (let i = 0; i < turnPath.length; i++){
+            socketKeys[turnPath[i][1]].hand = poker.playerHandGenerator(gameDeck)
+        }
+
 
         socket.emit('turnStart', socketKeys, globalVars)
 
@@ -130,6 +136,8 @@ io.on('connection', socket => {
         socketKeys = arg
         globalVars = localVars
         //if last person to raise is now the same person who is playing, end the phase, restart play at the small blind
+
+        //change who was playing to false now
 
 
         //otherwise, send the new globalVars and arg back to each client and keep playing.

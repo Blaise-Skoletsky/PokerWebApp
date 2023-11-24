@@ -1,18 +1,30 @@
-var cardConversion = {
-    2: '2',
-    3: '3',
-    4: '4',
-    5: '5',
-    6: '6',
-    7: '7',
-    8: '8',
-    9: '9',
-    10: '10',
-    11: 'J',
-    12: 'Q',
-    13: 'K',
-    14: 'A',
+module.exports = {
+    cardConversion: cardConversion,
+    generateDeck: generateDeck,
+    centerGenerator: centerGenerator,
+    playerHandGenerator, playerHandGenerator  
 }
+
+function cardConversion(value){
+    var convert = {
+        2: '2',
+        3: '3',
+        4: '4',
+        5: '5',
+        6: '6',
+        7: '7',
+        8: '8',
+        9: '9',
+        10: '10',
+        11: 'J',
+        12: 'Q',
+        13: 'K',
+        14: 'A',
+    }
+
+    return convert.value
+}
+
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -42,6 +54,9 @@ function centerGenerator(deck){
         centerCards.push(deck[card1])
         deck.splice(card1, 1) 
     }
+
+    return centerCards
+
 }
 
 //Generates 2 cards per hand
@@ -52,6 +67,7 @@ function playerHandGenerator(deck){
         handCards.push(deck[card1])
         deck.splice(card1, 1) 
     }
+    return handCards
 }
 
 centerGenerator(deck)
