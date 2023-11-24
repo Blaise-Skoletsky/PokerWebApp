@@ -109,6 +109,29 @@ header {
     text-align: center;
 }
 
+.cards-on-table {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 53.5%;
+    transform: translate(-50%, -50%);
+}
+
+.deck img {
+    max-height: 99px; 
+    width: auto;
+    margin: -80px;
+    margin-right: 15px;
+    vertical-align: middle;
+}
+
+.card {
+    max-height: 99px; /* Adjusted individual card height */
+    width: auto;
+    margin: 5px; /* Adjusted margin for spacing */
+}
 
 .person-player-row {
     display: flex;
