@@ -4,7 +4,12 @@
     <meta charset="utf-8">
     <title>Poker</title>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/client.js" type="module" charset="utf-8" defer></script>
+    
+    <!-- I don't really understand the type="module" so I commented it out for now to test out the raise-button -->
+    <!-- <script src="client.js" type="module" charset="utf-8" defer></script>-->
+    <script src="client.js" charset="utf-8" defer></script>
+
+
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -124,7 +129,7 @@
                 <div class="player-controls">
                     <button id="call-button">Call</button>
                     <button id="raise-button">Raise</button>
-                    <input style="display:none" type="number" id="raise-amount" placeholder="Enter amount">
+                    <input id="raise-amount" style="display:none" type="number" placeholder="Enter amount">
                     <button id="fold-button">Fold</button>
                 </div>
             </div>
