@@ -12,6 +12,7 @@ var tempStart = document.getElementById('temp')
 //This is all information that is needed to display at every change in turn. 
 var allPlayers = {}
 var localVars = 0
+var turnPath = []
 
 
 //When any turn happens, this updates the variables: arg contains the dictionaries containing all information
@@ -20,7 +21,8 @@ socket.on('turnStart', function(arg, globalVars){
     allPlayers = arg
     localVars = globalVars
 
-    socket.emit('turnEnd', allPlayers, localVars )
+    console.log(allPlayers)
+    console.log(localVars)
 
     //Graphical information should update, player who's turn it is should be highlighted
     if (localVars.game_progess === 'pre-flop'){

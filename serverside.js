@@ -30,12 +30,12 @@ let socketKeys = {}
 
 //global vars contains information about the whole table, like who is smallblind, bigblind, what the table bet is
 //what the progress of the flop is, ect. 
-let globalVars = {'smallblind': 0,
-                  'bigblind': 1, 
+let globalVars = {'smallblind': -1,
+                  'bigblind': 0, 
                   'table_bet': 0, 
                   'game_progress': 'pre-flop', 
                   'current_player': 0, 
-                  'last_person_to_raise': 1}
+                  'last_person_to_raise': 0}
 
 
 //Array for turn paths! Every game should shift by 1: each index is [turn1, socket]
@@ -62,7 +62,7 @@ io.on('connection', socket => {
 
         turnPath.push([0, socket.id])
         for (let i = 0; i < turnPath.length; i++){
-            turnPath[i][0] = i + 1
+            turnPath[i][0] = i
         }
     }
 
@@ -90,32 +90,33 @@ io.on('connection', socket => {
                 socketKeys[turnPath[i][1]].is_playing = true
             }
         }
-    
-        //Hopefully this works, if smallblind is ever at the last player, when it increments it circles back to 1
+        
+        //makes turns circular!!!
         globalVars.smallblind++
-        if (globalVars.smallblind > turnPath.length || globalVars.smallblind > 6){
-            globalVars.smallblind = 1
+        if (globalVars.smallblind > turnPath.length-1 || globalVars.smallblind > 5){
+            globalVars.smallblind = 0
         }
 
 
          //Hopefully this works, if bigblind is ever at the last player, when it increments it circles back to 1
         globalVars.bigblind++
-        if (globalVars.bigblind > turnPath.length || globalVars.bigblind > 6){
-            globalVars.bigblind = 1
+        if (globalVars.bigblind > turnPath.length-1 || globalVars.bigblind > 5){
+            globalVars.bigblind = 0
         }
-
 
         for (let i = 0; i < turnPath.length; i++){
             //TO FUTURE ME: Might be an error in the if statements, hopefulyl acts as circular. 
 
             if (turnPath[i][0] === globalVars.bigblind){
-                if (i === turnPath.length || i > 6){
-                    turnPath[0][1].is_turn = true 
+                if (i === turnPath.length || i > 5){
+                    socketKeys[turnPath[0][1]].is_turn = true
                     break
+                    
                 }
                 else{
                     socketKeys[turnPath[i+1][1]].is_turn = true
                     break
+                    
                 }
             }
         }
