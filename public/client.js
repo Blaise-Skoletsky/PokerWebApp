@@ -59,7 +59,7 @@
  callButton.addEventListener('click', function(){  
      console.log(socket.id)
      //Set turn to false
-     //allPlayers[socket.id].is_turn = fals
+     //allPlayers[socket.id].is_turn = false
      //after checking, check to see if the game would end, if it does change the gameprogress var to 'declare-winner'
      socket.emit('turnEnd', allPlayers, localVars)
  })

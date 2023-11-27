@@ -25,6 +25,16 @@ function cardConversion(value){
     return convert.value
 }
 
+function getImage(value){
+    var images = {
+        ([2, 'S'].toString()): 'imgurl'
+
+    }
+
+    return images[value.toString()]
+}
+
+
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
