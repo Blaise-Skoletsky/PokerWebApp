@@ -116,13 +116,10 @@ function evaluatePokerHand(cards) {
     }
     
     // Function to check if the cards form a straight
-    function isStraight() {
-        const values = sortedCards.map(card => (card));
-        const uniqueValues = [...new Set(values)];
-        const min = Math.min(...uniqueValues);
-        const max = Math.max(...uniqueValues);
-        return max - min === 4 && uniqueValues.length === 5;
+    function isStraight(){
+        
     }
+      
 
     // Check for a straight flush
     if (isFlush() && isStraight()) {
@@ -201,7 +198,7 @@ function evaluatePokerHand(cards) {
 }
 
 // Example usage
-const cards = [[6, 'D'], [5, 'D'], [4, 'S'], [3, 'S'], [2, 'S'], [3, 'D'], [9, 'H']];
-//const result = evaluatePokerHand(cards);
-//console.log(result);
+const cards = [[6, 'D'], [5, 'D'], [4, 'S'], [3, 'S'], [2, 'S'], [14, 'D'], [9, 'H']];
+const result = evaluatePokerHand(cards);
+console.log(result);
 
