@@ -25,10 +25,11 @@ function cardConversion(value){
     return convert.value
 }
 
+
+//[2, 'S'].toString()
 //function getImage(value){
 //    var images = {
-//        ([2, 'S'].toString()): 'imgurl'
-//
+//        [2, 'S'].toString(): 'imgurl'
 //    }
 //
 //    return images[value.toString()]

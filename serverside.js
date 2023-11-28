@@ -27,6 +27,7 @@ app.get('/client.js', function (req, res) {
 
 
 
+
 //Socket keys contains player individual info, like  their bet, their hand, if its their turn, ect. 
 let socketKeys = {}
 
