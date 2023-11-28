@@ -25,14 +25,14 @@ function cardConversion(value){
     return convert.value
 }
 
-function getImage(value){
-    var images = {
-        ([2, 'S'].toString()): 'imgurl'
-
-    }
-
-    return images[value.toString()]
-}
+//function getImage(value){
+//    var images = {
+//        ([2, 'S'].toString()): 'imgurl'
+//
+//    }
+//
+//    return images[value.toString()]
+//}
 
 
 function getRandomIntInclusive(min, max) {
