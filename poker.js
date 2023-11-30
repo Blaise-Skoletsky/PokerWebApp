@@ -125,12 +125,6 @@ function evaluatePokerHand(cards) {
         sortedCards[j+1] = currentCard
     }
 
-    for (let i = 0; i < sortedCards.length; i++){
-        console.log(sortedCards[i])
-    }
-  
-
-
     //Makes a dictionary filled with the number mapped to the amount of times it is in the hand. 
     cardCounts = {}
     for (let i = 0; i < sortedCards.length; i++){
@@ -147,44 +141,55 @@ function evaluatePokerHand(cards) {
         return true
     }
       
-
-    // Check for a straight flush
     if (isFlush() && isStraight()) {
-        let suit = 0
-        //First we remove cards from the array that aren't the right suit:
-        for(let i = 0; i < 4; i++){
-            if (counter[i] >= 5){
-                suit = suitsMap[i]
+
+        function decrementNumberInRange(inputString) {
+            // Extract the number and the rest of the string
+            const match = inputString.match(/^(\d+)(,(.*))?$/)
+          
+            if (match) {
+              let number = parseInt(match[1], 10)
+          
+              // Check if the number is within the range [2, 14]
+              if (number >= 2 && number <= 14) {
+                // Decrement the number
+                number--
+          
+                // Construct the new string with proper comma handling
+                const newString = `${number}${match[2] || ''}`
+          
+                return newString
+              } else {
+                // Number is outside the range
+                return "    "
+              }
+            } else {
+              // Input string doesn't match the expected format
+              return "     "
             }
         }
 
-        var options = {
-            'count': 0,
-            'maxVal': 0
+        let cardset = {}
+        let finalArr = []
+        for (i = 0; i < sortedCards.length; i++){
+            cardset[sortedCards[i].toString()] = 1
         }
-        //We need to find the highest card in the straight, We will loop through the sortedCards. We will have a c
-
-        for (let i = 0; i < sortedCards.length-4; i++){
-            if (options.count < 5){
-                options.count = 0
-            }
-            for (let j = 0; j < sortedCards.length-4-i; j++){
-                if (options.count === 0){
-                    options.maxVal = sortedCards[i][0]
-                }
-                if (sortedCards[i][1] === suit && sortedCards[i+1][1] === suit && sortedCards[i][0]-j === sortedCards[i-j][0]){
-                    options.count++
-                    if (options.count >= 5){
-                        return ['straight flush', maxVal]
-                    }
-                }
+    
+        for (let i = 0; i < sortedCards.length; i++){
+            let first = decrementNumberInRange(sortedCards[i].toString())
+            let second = decrementNumberInRange(first)
+            let third = decrementNumberInRange(second)
+            let fourth = decrementNumberInRange(third)
+            
+            if ((first in cardset) && (second in cardset) && (third in cardset) && (fourth in cardset)){
+                finalArr.push(sortedCards[i][0])
             }
         }
 
+        return ['straight flush', Math.max(...finalArr)]
 
-
-        return ['straight flush', (sortedCards[0]), null];
     }
+    
 
     //Four of a kind
     for (const [key, value] of Object.entries(cardCounts)){
@@ -258,7 +263,7 @@ function evaluatePokerHand(cards) {
 }
 
 // Example usage
-const cards = [[6, 'S'], [5, 'S'], [4, 'S'], [3, 'S'], [2, 'S'], [14, 'D'], [9, 'H']];
+const cards = [[6, 'S'], [5, 'S'], [4, 'S'], [3, 'S'], [2, 'S'], [4, 'S'], [9, 'H']];
 const result = evaluatePokerHand(cards);
 console.log(result);
 
