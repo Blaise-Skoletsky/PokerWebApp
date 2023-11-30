@@ -85,25 +85,27 @@ centerGenerator(deck)
 
 //Function takes in an array of cards in any order. Slowly looks down the line of poker hands
 function evaluatePokerHand(cards) {
+    let suitsMap = ['S', 'H', 'D', 'C']
+    let counter = [0,0,0,0]
+    for (let v = 0; v < cards.length; v++){
+        if (cards[v][1] === 'S'){
+            counter[0]++
+        }
+        if (cards[v][1] === 'H'){
+            counter[1]++
+        }
+        if (cards[v][1] === 'D'){
+            counter[2]++
+        }
+        if (cards[v][1] === 'C'){
+            counter[3]++
+        }
+    }
 
 
     // Function to check if all cards have the same suit
     function isFlush() {
-        let counter = [0,0,0,0]
-        for (let v = 0; v < cards.length; v++){
-            if (cards[v][1] === 'S'){
-                counter[0]++
-            }
-            if (cards[v][1] === 'H'){
-                counter[1]++
-            }
-            if (cards[v][1] === 'D'){
-                counter[2]++
-            }
-            if (cards[v][1] === 'C'){
-                counter[3]++
-            }
-        }
+      
         if (Math.max(...counter) >= 5){
             return true
         }
@@ -111,7 +113,21 @@ function evaluatePokerHand(cards) {
     }
 
     // Sort the cards in descending order of their values
-    const sortedCards = cards.slice().sort((a, b) => (b) - (a));
+
+    let sortedCards = cards
+    for (let i = 0; i < sortedCards.length; i++){
+        const currentCard = sortedCards[i]
+        let j = i-1
+        while(j >= 0 && sortedCards[j][0] < currentCard[0]){
+            sortedCards[j+1] = sortedCards[j]
+            j--
+        }
+        sortedCards[j+1] = currentCard
+    }
+
+    for (let i = 0; i < sortedCards.length; i++){
+        console.log(sortedCards[i])
+    }
   
 
 
@@ -128,12 +144,45 @@ function evaluatePokerHand(cards) {
     
     // Function to check if the cards form a straight
     function isStraight(){
-        
+        return true
     }
       
 
     // Check for a straight flush
     if (isFlush() && isStraight()) {
+        let suit = 0
+        //First we remove cards from the array that aren't the right suit:
+        for(let i = 0; i < 4; i++){
+            if (counter[i] >= 5){
+                suit = suitsMap[i]
+            }
+        }
+
+        var options = {
+            'count': 0,
+            'maxVal': 0
+        }
+        //We need to find the highest card in the straight, We will loop through the sortedCards. We will have a c
+
+        for (let i = 0; i < sortedCards.length-4; i++){
+            if (options.count < 5){
+                options.count = 0
+            }
+            for (let j = 0; j < sortedCards.length-4-i; j++){
+                if (options.count === 0){
+                    options.maxVal = sortedCards[i][0]
+                }
+                if (sortedCards[i][1] === suit && sortedCards[i+1][1] === suit && sortedCards[i][0]-j === sortedCards[i-j][0]){
+                    options.count++
+                    if (options.count >= 5){
+                        return ['straight flush', maxVal]
+                    }
+                }
+            }
+        }
+
+
+
         return ['straight flush', (sortedCards[0]), null];
     }
 
@@ -209,7 +258,7 @@ function evaluatePokerHand(cards) {
 }
 
 // Example usage
-const cards = [[6, 'D'], [5, 'D'], [4, 'S'], [3, 'S'], [2, 'S'], [14, 'D'], [9, 'H']];
+const cards = [[6, 'S'], [5, 'S'], [4, 'S'], [3, 'S'], [2, 'S'], [14, 'D'], [9, 'H']];
 const result = evaluatePokerHand(cards);
 console.log(result);
 
