@@ -267,3 +267,29 @@ const cards = [[6, 'S'], [5, 'S'], [4, 'S'], [3, 'S'], [2, 'S'], [4, 'S'], [9, '
 const result = evaluatePokerHand(cards);
 console.log(result);
 
+
+//player, hand, value
+//orders the winners into order of best hand desending, does not accound for same hands yet
+function winnerOrder(players){
+    for(let i = 1; i < players.length(); i++){
+        let current = players[i];
+        let j = i - 1;
+        while(j >= 0 && players[j].hand[0] < current.hand[0]){
+            if(players[j].hand[0] === current.hand[0]){         //check if the hands are the same. If they are goes through cards until one is higher. Add 1 to the win value of the higher card.
+                for(let k = 2; k < 7; k++){                     //have win value go up by 10
+                    if(player[j].hand[k] > current.hand[k]){
+                        player[j].hand[0] += 1;
+                        continue;
+                    }
+                    else if(player[j].hand[k] < current.hand[k]){
+                        current.hand[0] += 1;
+                        continue;
+                    }
+                }
+            }
+            players[j+1] = players[j];
+            j--;
+        }
+        players[j + 1].hand[0] = currentElement;
+    }
+}
