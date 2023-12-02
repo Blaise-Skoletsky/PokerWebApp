@@ -35,7 +35,8 @@ let socketKeys = {}
 //what the progress of the flop is, ect. 
 let globalVars = {'smallblind': -1,
                   'bigblind': 0, 
-                  'table_bet': 0, 
+                  'table_bet': 0,
+                  'round_bet': 0, 
                   'game_progress': 'pre-flop', 
                   'current_player': 0, 
                   'last_person_to_raise': 0,
@@ -60,8 +61,9 @@ io.on('connection', socket => {
         socketKeys[socket.id] = {'name': 'temp', 
                                 'total_money': 500,
                                 'current_bet': 0,
-                                'is_playing': false,
-                                'is_turn': false,
+                                'is_folded': false, //They have or haven't folded yet.
+                                'is_playing': false, //This means they are dealt hands and are in the 6 game lobby.
+                                'is_turn': false, //Currently have buttons showing, can make a move
                                 'hand': [null]}
 
         turnPath.push([0, socket.id])
@@ -128,14 +130,67 @@ io.on('connection', socket => {
         }
 
 
-        socket.emit('turnStart', socketKeys, globalVars)
+        socket.emit('turnStart', socketKeys, globalVars, turnPath)
 
     })
 
     //When a player moves, all their information should be put back into the global info system: the map of the keys
-    socket.on('turnEnd', function(arg, localVars){
+    socket.on('turnEnd', function(arg, localVars, order){
         socketKeys = arg
         globalVars = localVars
+        turnPath = order
+
+        for(let i = 0; i < turnPath.length; i++){
+            if (socketKeys[turnPath[i][1]].is_turn){
+                if(turnPath.length <= i+1){
+                    socketKeys[turnPath[0][1]].is_turn = true
+                }
+                else{
+                    socketKeys[turnPath[i+1][0]].is_turn = true
+                }
+            }
+        }
+        socketKeys[turnPath[i][1]].is_turn = false
+
+
+        for (let i = 0; i < turnPath.length; i++){
+            if (socketKeys[turnPath[i][1].is_turn] && globalVars.last_person_to_raise === i){
+                if (turnPath[i][0] === globalVars.bigblind){
+                    if (turnPath[i][0] === globalVars.bigblind) {
+                        const nextPlayerIndex = (i + 1) % turnPath.length
+                
+                        socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
+                        break
+                    }
+                }
+                socketKeys[turnPath[i][1]].is_turn = false
+                if (globalVars.game_progress === 'pre-flop'){
+                    globalVars.game_progress = 'flop'
+                }
+                else if (globalVars.game_progress === 'flop'){
+                    globalVars.game_progress = 'turn'
+                }
+                else if (globalVars.game_progress === 'turn'){
+                    globalVars.game_progress = 'river'
+                }
+                else if (globalVars.game_progress === 'river'){
+                    globalVars.game_progress = 'done'
+                }
+            }
+        }
+
+        if (globalVars.game_progress  === 'done'){
+
+            //Run lukes code to distribute money. 
+            socket.emit('readyUp', socketKeys, globalVars, turnPath)
+        }
+        else {
+            socket.emit('turnStart', socketKeys, globalVars, turnPath)
+        }
+
+
+
+
         //if last person to raise is now the same person who is playing, end the phase, restart play at the small blind
 
         //change who was playing to false now
@@ -152,7 +207,7 @@ io.on('connection', socket => {
     socket.on('disconnect', function(){
         for (let i = 0; i < turnPath.length; i++){
             if (turnPath[i][1] === socket.id){
-                //turnPath.splice(i, i)
+
                 turnPath = turnPath.filter(item => item && item[1] !== socket.id);
             }
         }
@@ -161,10 +216,6 @@ io.on('connection', socket => {
     })
 
 
-
-    
-    
-    
 });
 
 

@@ -84,7 +84,10 @@ function playerHandGenerator(deck){
 
 centerGenerator(deck)
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 function decrementNumberInRange(inputString) {
     // Extract the number and the rest of the string
     const match = inputString.match(/^(\d+)(,(.*))?$/)
