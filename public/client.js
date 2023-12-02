@@ -46,15 +46,12 @@
      }
 
      //Graphical information should update, player who's turn it is should be highlighted
-     var images
+     var images = document.getElementsByClassName('card')
      if (localVars.game_progess === 'pre-flop'){
          //display no cards
      }
      else if (localVars.game_progess === 'flop'){
-        
-
-
-
+       
          //display 3 cards
      }
      else if (localVars.game_progess === 'turn'){
@@ -138,4 +135,12 @@ raiseAmount.addEventListener('keyup', function(event){
     }
 })
 
+
+document.getElementById('ready-button').addEventListener('click', function () {
+    var players = document.querySelectorAll('.player');
+    players.forEach(function (player) {
+        player.style.display = 'flex';
+    });
+    document.getElementById('ready-button').style.display = 'none';
+});
 
