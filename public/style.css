@@ -72,6 +72,20 @@ header {
     width: auto;
 }
 
+.player-info-box {
+    flex: 1;
+    width: 95%;
+    height: 70%;
+    text-align: center;
+    border: 3px solid #263238;
+    border-radius: 10px;
+    background-color: #fff;
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Adjust spacing between elements */
+}
+
 .player-info-container {
     flex: 1;
     width: 100%;
@@ -80,23 +94,15 @@ header {
     align-items: center;
 }
 
-.player-info-box {
-    flex: 1;
-    width: 95%;
-    height: 70%;
-    text-align: center;
-    border: 3px solid #263238; 
-    border-radius: 10px;
-    background-color: #fff; 
-    margin: 5px;
-}
-
 .player-name,
 .money-made {
-    size: 12px;
+    font-size: 16px;
     display: inline-block;
     margin: auto;
-    color: #263238; 
+    margin-top: 5px;
+    color: #263238;
+    max-width: 105px;
+    text-align: center;
 }
 
 .table {
@@ -161,4 +167,14 @@ header {
 
 .person-player button {
     margin: 1px;
+}
+
+.player {
+    display: none;
+}
+
+#ready-button {
+    margin: 10px;
+    padding: 5px;
+    font-size: 16px;
 }

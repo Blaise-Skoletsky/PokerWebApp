@@ -85,3 +85,12 @@ raiseButton.addEventListener('click', function(){
 
 })
 
+
+document.getElementById('ready-button').addEventListener('click', function () {
+    var players = document.querySelectorAll('.player');
+    players.forEach(function (player) {
+        player.style.display = 'flex';
+    });
+
+    document.getElementById('ready-button').style.display = 'none';
+});
