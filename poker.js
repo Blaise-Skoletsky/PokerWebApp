@@ -25,16 +25,20 @@ function cardConversion(value){
     return convert.value
 }
 
+const path = require('path');
+const IMAGES_FOLDER = 'PNG-cards-1.3';
 
-//[2, 'S'].toString()
-//function getImage(value){
-//    var images = {
-//        [2, 'S'].toString(): 'imgurl'
-//    }
-//
-//    return images[value.toString()]
-//}
+function getImage(value) {
+    const [cardValue, suit] = value;
+    const filename = `${cardValue}_of_${suit}.png`;
+    const imagePath = path.join(__dirname, IMAGES_FOLDER, filename);
 
+    return imagePath;
+}
+
+// testing out getImage()
+const imagePath = getImage([2, 'diamonds']);
+console.log("======image path here: " + imagePath);
 
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
