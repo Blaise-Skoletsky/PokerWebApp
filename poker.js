@@ -1,3 +1,6 @@
+
+module.exports.getImage = getImage
+
 module.exports = {
     cardConversion: cardConversion,
     generateDeck: generateDeck,

@@ -40,7 +40,9 @@ let globalVars = {'smallblind': -1,
                   'game_progress': 'pre-flop', 
                   'current_player': 0, 
                   'last_person_to_raise': 0,
-                  'center': []}
+                  'center': [],
+                  'center-img': [],
+                  'ready_players': 0}
 
 
 //Array for turn paths! Every game should shift by 1: each index is [turn1, socket]
@@ -64,7 +66,9 @@ io.on('connection', socket => {
                                 'is_folded': false, //They have or haven't folded yet.
                                 'is_playing': false, //This means they are dealt hands and are in the 6 game lobby.
                                 'is_turn': false, //Currently have buttons showing, can make a move
-                                'hand': [null]}
+                                'hand': [null],
+                                'hand_img': []
+                                }
 
         turnPath.push([0, socket.id])
         for (let i = 0; i < turnPath.length; i++){
@@ -80,57 +84,63 @@ io.on('connection', socket => {
 
     //Function starts the game, once all players have said they are ready, it shoots off the first 'turnhappend' event to the client
     socket.on('allready', function(){
-        
-        //readyVal++ 
-        //if (readyVal === Object.keys(socketKeys).length){
-        //    //Fire off the first turn happened, selecting a random player to start: 
-//
-        //    socket.emit('turnStart', socketKeys, globalVars)
-//
-//
-//
-        //}
-        //If there are more than 6 players, they will be set to false and can only spectate. 
-        for (let i = 0; i < turnPath.length; i++){
-            if (i < 6){
-                socketKeys[turnPath[i][1]].is_playing = true
-            }
-        }
-        
-        //makes turns circular!!!
-        globalVars.smallblind++
-        if (globalVars.smallblind > turnPath.length-1 || globalVars.smallblind > 5){
-            globalVars.smallblind = 0
-        }
 
+        globalVars.ready_players++
 
-         //Hopefully this works, if bigblind is ever at the last player, when it increments it circles back to 1
-        globalVars.bigblind++
-        if (globalVars.bigblind > turnPath.length-1 || globalVars.bigblind > 5){
-            globalVars.bigblind = 0
-        }
+        console.log(globalVars.ready_players)
+        if (globalVars.ready_players >= turnPath.length){
 
-        for (let i = 0; i < turnPath.length; i++){
-            //TO FUTURE ME: Might be an error in the if statements, hopefulyl acts as circular. 
+            console.log('1')
 
-            if (turnPath[i][0] === globalVars.bigblind){
-                if (turnPath[i][0] === globalVars.bigblind) {
-                    const nextPlayerIndex = (i + 1) % turnPath.length
-            
-                    socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
-                    break
+            for (let i = 0; i < turnPath.length; i++){
+                if (i < 6){
+                    socketKeys[turnPath[i][1]].is_playing = true
                 }
             }
+            
+            //makes turns circular!!!
+            globalVars.smallblind++
+            if (globalVars.smallblind > turnPath.length-1 || globalVars.smallblind > 5){
+                globalVars.smallblind = 0
+            }
+    
+    
+             //Hopefully this works, if bigblind is ever at the last player, when it increments it circles back to 1
+            globalVars.bigblind++
+            if (globalVars.bigblind > turnPath.length-1 || globalVars.bigblind > 5){
+                globalVars.bigblind = 0
+            }
+            
+            for (let i = 0; i < turnPath.length; i++){
+                //TO FUTURE ME: Might be an error in the if statements, hopefulyl acts as circular. 
+    
+                if (turnPath[i][0] === globalVars.bigblind){
+                    if (turnPath[i][0] === globalVars.bigblind) {
+                        const nextPlayerIndex = (i + 1) % turnPath.length
+                
+                        socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
+                        break
+                    }
+                }
+            }
+            
+            gameDeck = poker.generateDeck()
+            globalVars.center = poker.centerGenerator(gameDeck)
+            for (let i = 0; i < turnPath.length; i++){
+                socketKeys[turnPath[i][1]].hand = poker.playerHandGenerator(gameDeck)
+        
+                for (let j = 0; j < 2; j++){
+                    socketKeys[turnPath[i][1]].hand_img.push(poker.getImage(socketKeys[turnPath[i][1]].hand[j]))
+                }
+
+
+               
+
+            }
+    
+            socket.emit('turnStart', socketKeys, globalVars, turnPath)
         }
-
-        gameDeck = poker.generateDeck()
-        globalVars.center = poker.centerGenerator(gameDeck)
-        for (let i = 0; i < turnPath.length; i++){
-            socketKeys[turnPath[i][1]].hand = poker.playerHandGenerator(gameDeck)
-        }
-
-
-        socket.emit('turnStart', socketKeys, globalVars, turnPath)
+        
 
     })
 

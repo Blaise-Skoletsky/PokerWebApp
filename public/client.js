@@ -1,12 +1,13 @@
 // **** socket stuff wasn't working properly so I commented it out for now to test out raise button functionality. *****
 
 
- //Might have to rename to socket. 
+//Might have to rename to socket. 
  const socket = io('http://localhost:3000')
  var callButton = document.getElementById('call-button')
  var raiseButton = document.getElementById('raise-button')
  var foldButton = document.getElementById('fold-button')
  var tempStart = document.getElementById('temp')
+
  //[Player Name(customizeable), Amount of money(before betting), currentBet, isTurn (boolean value), isPlaying (boolean value),hand(should be an array)
  //This is all information that is needed to display at every change in turn. 
  var allPlayers = {}
@@ -19,11 +20,14 @@
      turnPath = turns
      console.log(allPlayers)
      console.log(localVars)
+    
 
-     if (allPlayers[socket.id].is_playing){
-        //Display their own cards, otherwise leave the backs showing
-        document.getElementById('player')
-     }
+     //I think there is some file routing errors, as I am 
+     let playerImg1 = document.getElementById('mc1')
+     let playerImg2 = document.getElementById('mc2')
+
+     //playerImg1.src = allPlayers[socket.id].hand_img[0]
+     //playerImg2.src = allPlayers[socket.id].hand_img[1]
      
      var opponents = document.getElementsByClassName('player-info-container')
      for (var i = 0; i < turnPath.length; i++){
@@ -131,3 +135,16 @@ raiseAmount.addEventListener('keyup', function(event){
 })
 
 
+<<<<<<< Updated upstream
+=======
+document.getElementById('ready-button').addEventListener('click', function () {
+    var players = document.querySelectorAll('.player');
+    players.forEach(function (player) {
+        player.style.display = 'flex';
+    });
+    document.getElementById('ready-button').style.display = 'none';
+
+    socket.emit('allready')
+});
+
+>>>>>>> Stashed changes
