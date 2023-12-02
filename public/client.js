@@ -87,10 +87,25 @@ raiseButton.addEventListener('click', function(){
 
 
 document.getElementById('ready-button').addEventListener('click', function () {
-    var players = document.querySelectorAll('.player');
-    players.forEach(function (player) {
-        player.style.display = 'flex';
-    });
+    const playerNameInput = document.getElementById('player-name-input');
+    const playerName = playerNameInput.value.trim();
 
-    document.getElementById('ready-button').style.display = 'none';
+    if (playerName !== '') {
+
+        socket.emit('setPlayerName', playerName);
+
+        playerNameInput.style.display = 'none';
+        document.getElementById('ready-button').style.display = 'none';
+
+        const playerControls = document.querySelector('.person-player.player .player-controls');
+        playerControls.style.display = 'flex';
+
+        const allPlayers = document.querySelectorAll('.player');
+        allPlayers.forEach(function (player) {
+            player.style.display = 'flex';
+        });
+    } 
+    else {
+        alert('Please enter your name before readying up.');
+    }
 });
