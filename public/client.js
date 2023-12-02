@@ -22,12 +22,22 @@
 
      if (allPlayers[socket.id].is_playing){
         //Display their own cards, otherwise leave the backs showing
+        document.getElementById('player')
      }
      
+     var opponents = document.getElementsByClassName('player-info-container')
      for (var i = 0; i < turnPath.length; i++){
-        if (allPlayers[turnPath[i][1]].is_playing){
+        if (allPlayers[turnPath[i][1]].is_playing && !allPlayers[turnPath[i][1].is_folded]){
+            
+            
             if (allPlayers[turnPath[i][1]].is_turn){
+                //Show buttons, highlight them green
+
                 //If it is their turn, highlight their background green or do something to indicate it!
+            }
+            else{
+
+                //hide buttons
             }
 
             //Display the amount each player has bet, total amount left, other info, ect.
@@ -36,10 +46,15 @@
      }
 
      //Graphical information should update, player who's turn it is should be highlighted
+     var images
      if (localVars.game_progess === 'pre-flop'){
          //display no cards
      }
      else if (localVars.game_progess === 'flop'){
+        
+
+
+
          //display 3 cards
      }
      else if (localVars.game_progess === 'turn'){
@@ -52,19 +67,36 @@
          // Unhide the buttons, allow them to play
      }
  })
+
+
+ 
  tempStart.addEventListener('click', function(){
      socket.emit('allready')
      console.log('start')
  })
- callButton.addEventListener('click', function(){  
-     console.log(socket.id)
-     //Set turn to false
-     //allPlayers[socket.id].is_turn = false
-     //after checking, check to see if the game would end, if it does change the gameprogress var to 'declare-winner'
-     socket.emit('turnEnd', allPlayers, localVars)
- })
 
-const raiseAmount = document.getElementById("raise-amount");
+foldButton.addEventListener('click', function(){
+    allPlayers[socket.id].is_folded = true
+    allPlayers[socket.id].is_turn = false
+    socket.emit('turnEnd', allPlayers, localVars, turnPath)
+})
+
+
+ callButton.addEventListener('click', function(){  
+    
+    //Set turn to false
+
+    var difference = localVars.round_bet - allPlayers[socket.id].current_bet
+
+    allPlayers[socket.id].current_bet += difference
+    allPlayers[socket.id].total_money -= difference
+
+    localVars.table_bet += difference
+
+    allPlayers[socket.id].is_turn = false
+    //after checking, check to see if the game would end, if it does change the gameprogress var to 'declare-winner'
+    socket.emit('turnEnd', allPlayers, localVars, turnPath)
+ })
 
 raiseButton.addEventListener('click', function(){
 
@@ -75,22 +107,35 @@ raiseButton.addEventListener('click', function(){
         raiseButton.style.display = "inline-block";
     }
 
-    if (allPlayers[socket.id].total_money > 20){
-        allPlayers[socket.id].total_money = allPlayers[socket.id].total_money - 20
-        allPlayers[socket.id].current_bet = allPlayers[socket.id].current_bet + 20
-        
+})
 
-        socket.emit('turnEnd', allPlayers, localVars)
+const raiseAmount = document.getElementById("raise-amount");
+raiseAmount.addEventListener('keyup', function(event){
+    if(event.keyCode == 13){
+
+        //make sure it's a number
+        var amountRaised = raiseAmount.value 
+        if (amountRaised > allPlayers[socket.id].total_money + allPlayers[socket.id].current_bet){
+            raiseAmount.value = ''
+        }
+        else{
+            var difference = amountRaised - allPlayers[socket.id].current_bet
+            allPlayers[socket.id].total_money -= difference
+            allPlayers[socket.id].current_bet = amountRaised
+            localVars.table_bet += difference
+            localVars.round_bet = amountRaised
+            
+            raiseAmount.value = ''
+
+            for(let i = 0; i < turnPath.length; i++){
+                if (turnPath[i][i] === socket.id){
+                    localVars.last_person_to_raise = i
+                }
+            }
+
+            socket.emit('turnEnd', allPlayers, localVars, turnPath)
+        }
     }
-
 })
 
 
-document.getElementById('ready-button').addEventListener('click', function () {
-    var players = document.querySelectorAll('.player');
-    players.forEach(function (player) {
-        player.style.display = 'flex';
-    });
-
-    document.getElementById('ready-button').style.display = 'none';
-});
