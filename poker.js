@@ -2,7 +2,10 @@ module.exports = {
     cardConversion: cardConversion,
     generateDeck: generateDeck,
     centerGenerator: centerGenerator,
-    playerHandGenerator, playerHandGenerator  
+    playerHandGenerator: playerHandGenerator,
+    getImage: getImage,
+    winnerOrder: winnerOrder,
+    distributePot: distributePot
 }
 
 function cardConversion(value){
@@ -88,6 +91,33 @@ function playerHandGenerator(deck){
 centerGenerator(deck)
 
 //Function takes in an array of cards in any order. Slowly looks down the line of poker hands
+function decrementNumberInRange(inputString) {
+    // Extract the number and the rest of the string
+    const match = inputString.match(/^(\d+)(,(.*))?$/)
+  
+    if (match) {
+      let number = parseInt(match[1], 10)
+  
+      // Check if the number is within the range [2, 14]
+      if (number >= 2 && number <= 14) {
+        // Decrement the number
+        number--
+  
+        // Construct the new string with proper comma handling
+        const newString = `${number}${match[2] || ''}`
+  
+        return newString
+      } else {
+        // Number is outside the range
+        return "    "
+      }
+    } else {
+      // Input string doesn't match the expected format
+      return "     "
+    }
+}
+
+//Function takes in an array of cards in any order. Slowly looks down the line of poker hands
 function evaluatePokerHand(cards) {
     let suitsMap = ['S', 'H', 'D', 'C']
     let counter = [0,0,0,0]
@@ -107,7 +137,7 @@ function evaluatePokerHand(cards) {
     }
 
 
-    // Function to check if all cards have the same suit
+    // Function to check if all cards have the same suit, Done!
     function isFlush() {
       
         if (Math.max(...counter) >= 5){
@@ -140,38 +170,30 @@ function evaluatePokerHand(cards) {
         }
     }
     
-    // Function to check if the cards form a straight
+    // Function to check if the cards form a straight - Done!
     function isStraight(){
-        return true
-    }
-      
-    if (isFlush() && isStraight()) {
 
-        function decrementNumberInRange(inputString) {
-            // Extract the number and the rest of the string
-            const match = inputString.match(/^(\d+)(,(.*))?$/)
-          
-            if (match) {
-              let number = parseInt(match[1], 10)
-          
-              // Check if the number is within the range [2, 14]
-              if (number >= 2 && number <= 14) {
-                // Decrement the number
-                number--
-          
-                // Construct the new string with proper comma handling
-                const newString = `${number}${match[2] || ''}`
-          
-                return newString
-              } else {
-                // Number is outside the range
-                return "    "
-              }
-            } else {
-              // Input string doesn't match the expected format
-              return "     "
+        let cardset = {}
+        let finalArr = []
+        for (i = 0; i < sortedCards.length; i++){
+            cardset[sortedCards[i][0]] = 1
+        }
+        for (i = 0; i < sortedCards.length; i++){
+            let first = sortedCards[i][0] - 1
+            let second = first-1
+            let third = second-1
+            let fourth = third-1
+            if (fourth == 1){
+                fourth = 14
+            }
+            if((first in cardset) && (second in cardset) && (third in cardset) && (fourth in cardset)){
+                return true
             }
         }
+        return false
+    }
+    //Function to check for a straight flush!- Almost done- right now it is possible for their to be a flush and a straight seperately, which would make the function not work. ALSO NEED TO MAKE ACE WORK!
+    if (isFlush() && isStraight()) {
 
         let cardset = {}
         let finalArr = []
@@ -185,27 +207,34 @@ function evaluatePokerHand(cards) {
             let third = decrementNumberInRange(second)
             let fourth = decrementNumberInRange(third)
             
+            
             if ((first in cardset) && (second in cardset) && (third in cardset) && (fourth in cardset)){
                 finalArr.push(sortedCards[i][0])
             }
         }
 
-        return ['straight flush', Math.max(...finalArr)]
+        return [8, Math.max(...finalArr)]
 
     }
     
 
-    //Four of a kind
+    //Four of a kind - Done!
     for (const [key, value] of Object.entries(cardCounts)){
   
         if (value === 4){
-            return ['four of a kind', parseInt(key), null]
+            for (i = 0; i < sortedCards.length;i++){
+                if (key != sortedCards[i][0]){
+                    return [7, parseInt(key), sortedCards[i][0]]
+                }
+            }
+
+           
         }
     }
 
 
 
-    // Check for full house
+    // Check for full house - Maybe done? Lets check it more!
     thrice = [false, 0]
     twice = [false]
     for (const [key, value] of Object.entries(cardCounts)){
@@ -222,48 +251,120 @@ function evaluatePokerHand(cards) {
         }
     }
     if (thrice[1] === 2){
-        return ['full house', Math.max(thrice[2], thrice[3]), Math.min(thrice[2], thrice[3])]
+        return [6, Math.max(thrice[2], thrice[3]), Math.min(thrice[2], thrice[3])]
     }
     if (thrice[1] === 1 && twice[0] === true){
-        return ['full house', thrice[2], twice[1]]
+        return [6, thrice[2], twice[1]]
     }
 
-    // Check for flush
+    // Check for flush - Done!
     if (isFlush()) {
-        return ['flush', sortedCards[0], sortedCards[1], sortedCards[2], sortedCards[3], sortedCards[4]];
+        console.log(counter)
+        let suit = 0
+        for (let i =0 ;i < counter.length; i++){
+            if (counter[i] >= 5){
+                suit = suitsMap[i]
+            }
+        }
+        let thing = [5]
+        for(let i = 0; i <sortedCards.length; i++){
+            if (sortedCards[i][1] == suit){
+                thing.push(sortedCards[i][0])
+            }
+        }
+        return thing
+
+       
+
     }
 
-    // Check for straight - NEED TO REWORD FOR 5432-ACE !!!!
+    // Check for straight - Done
     if (isStraight()) {
-        
+    
+        let cardset = {}
+        let finalArr = []
+        for (i = 0; i < sortedCards.length; i++){
+            cardset[sortedCards[i][0]] = 1
+        }
+        for (i = 0; i < sortedCards.length; i++){
+            let first = sortedCards[i][0] - 1
+            let second = first-1
+            let third = second-1
+            let fourth = third-1
+            if (fourth == 1){
+                fourth = 14
+            }
 
-        return ['straight'];
+            if((first in cardset) && (second in cardset) && (third in cardset) && (fourth in cardset)){
+                finalArr.push(sortedCards[i][0])
+            }
+        }
+        return [4, Math.max(...finalArr)]
+
     }
 
-    // Check for three of a kind
+    // Check for three of a kind - Done
     for (const [key, value] of Object.entries(cardCounts)){
-        console.log([key, value])
         if (value === 3){
-            return ['three of a kind', parseInt(key), null]
+            let things = [3, parseInt(key)]
+            for (i = 0; i < sortedCards.length;i++){
+                if (key != sortedCards[i][0]){
+                    things.push(sortedCards[i][0])
+                    if (things.length == 4){
+                        return things
+                    }
+                    
+                }
+            }
         }
-    }
-    // Check for two pairs
-    if ((sortedCards[0] === sortedCards[1] && sortedCards[2] === sortedCards[3])
-        || (sortedCards[0] === sortedCards[1] && sortedCards[3] === sortedCards[4])
-        || (sortedCards[1] === sortedCards[2] && sortedCards[3] === sortedCards[4])) {
-        return ['two pairs', sortedCards[0], sortedCards[3]];
     }
 
 
-    // Check for one pair
-    for (let i = 0; i < 4; i++) {
-        if (sortedCards[i] === sortedCards[i + 1]) {
-            return ['one pair', sortedCards[i], sortedCards[4]];
+    // Check for two pairs - Done!
+    let pairsList = []
+    for (const [key, value] of Object.entries(cardCounts)){
+        if (value === 2){
+            pairsList.push(parseInt(key))
         }
     }
+    if (pairsList.length >= 2){
+        let val1 = Math.max(...pairsList)
+        let val1idx = pairsList.indexOf(val1)
+        if (val1idx !== -1){
+            pairsList.splice(val1idx, 1)
+        }
+        let val2 = Math.max(...pairsList)
+
+        for (let i = 0; i < sortedCards.length; i++){
+            if (sortedCards[i][0] != val1 && sortedCards[i][0] != val2){
+                return [2, val1, val2, sortedCards[i][0]]
+
+            }
+        }
+    }
+
+
+    // Check for one pair - Done!
+
+    for (const [key, value] of Object.entries(cardCounts)){
+        if (value === 2){
+            let pairsList2 = [1]
+            pairsList2.push(parseInt(key))
+            for (let i = 0; i < sortedCards.length; i++){
+                
+                if (sortedCards[i][0] != key){
+                    pairsList2.push(sortedCards[i][0])
+                    if (pairsList2.length >= 5){
+                        return pairsList2
+                    }
+                }
+            }
+        }
+    }
+    
 
     // If no specific hand is detected, return a default result
-    return ['high card', sortedCards[0], sortedCards[1]];
+    return [0, sortedCards[0][0], sortedCards[1][0], sortedCards[2][0], sortedCards[3][0], sortedCards[4][0]];
 }
 
 // Example usage
@@ -307,8 +408,15 @@ function distributePot(players, potSize){
         if(player[i].hand[0] != player[i+1].hand[0]){        
             let winnings = player[i].current_bet * (length - i);
             player[i].total_money += winnings;
+            if(winnings <= potSize){
             potSize -= winnings;
             i++;
+            }
+            else{
+                winnings = potSize;
+                potSize -= winnings;
+                i++;
+            }
         }
         else{
             let firstTied = i;
