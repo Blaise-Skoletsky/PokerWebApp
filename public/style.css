@@ -168,3 +168,13 @@ header {
 .person-player button {
     margin: 1px;
 }
+
+.player {
+    display: none;
+}
+
+#ready-button {
+    margin: 10px;
+    padding: 5px;
+    font-size: 16px;
+}
