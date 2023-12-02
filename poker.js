@@ -303,8 +303,15 @@ function distributePot(players, potSize){
         if(player[i].hand[0] != player[i+1].hand[0]){        
             let winnings = player[i].current_bet * (length - i);
             player[i].total_money += winnings;
+            if(winnings <= potSize){
             potSize -= winnings;
             i++;
+            }
+            else{
+                winnings = potSize;
+                potSize -= winnings;
+                i++;
+            }
         }
         else{
             let firstTied = i;
