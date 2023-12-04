@@ -13,8 +13,8 @@ var allPlayers = {}
 var localVars = {}
 var turnPath = []
 //When any turn happens, this updates the variables: arg contains the dictionaries containing all information
- 
 
+var ourName = '';
 
 socket.on('turnStart', function(arg, globalVars, turns) {
     allPlayers = arg
@@ -35,7 +35,10 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     // repopulate players
     for(socket.id in allPlayers){
 
-
+        // skip ourself
+        if (allPlayers[socket.id]["name"] == ourName) {
+            continue;
+        }
 
         var opponentHTML = "<div class='opponent'><div class='player-contents'><div class='player-image-container'><img src='card-back.png' alt='Card 1'><img src='card-back.png' alt='Card 2'></div><div class='player-info-container'><div class='player-info-box'><a class='player-name'>"+
         allPlayers[socket.id]["name"]+
@@ -118,7 +121,7 @@ document.getElementById('ready-button').addEventListener('click', function () {
     const playerName = playerNameInput.value.trim();
 
     if (playerName !== '') {
-
+        ourName = playerName;
         socket.emit('setPlayerName', playerName);
 
         playerNameInput.style.display = 'none';
