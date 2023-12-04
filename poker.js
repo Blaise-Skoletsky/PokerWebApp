@@ -32,7 +32,19 @@ const path = require('path');
 const IMAGES_FOLDER = 'PNG-cards-1.3';
 
 function getImage(value) {
-    const [cardValue, suit] = value;
+    var [cardValue, suit] = value;
+    if(suit == 'D'){
+        suit = 'diamonds'
+    }
+    else if(suit == 'S'){
+        suit = 'spades'
+    }
+    else if(suit == 'H'){
+        suit = 'hearts'
+    }
+    else if(suit == 'C'){
+        suit = 'clubs'
+    }
     const filename = `${cardValue}_of_${suit}.png`;
     const imagePath = path.join(__dirname, IMAGES_FOLDER, filename);
 
@@ -40,7 +52,7 @@ function getImage(value) {
 }
 
 // testing out getImage()
-const imagePath = getImage([2, 'diamonds']);
+const imagePath = getImage([2, 'C']);
 console.log("======image path here: " + imagePath);
 
 function getRandomIntInclusive(min, max) {
