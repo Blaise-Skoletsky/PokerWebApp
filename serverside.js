@@ -56,9 +56,14 @@ let numPlayers = 0
 
 io.on('connection', socket => {
 
+    // set player name on ready up
+    socket.on('setPlayerName', function(name){
+        socketKeys[socket.id]['name'] = name
+    })
+
     //On connection, socketID is mapped to the 
     if (!(socket.id in socketKeys)){
-        socketKeys[socket.id] = {'name': 'temp', 
+        socketKeys[socket.id] = {'name': 'Not Ready', 
                                 'total_money': 500,
                                 'current_bet': 0,
                                 'is_folded': false, //They have or haven't folded yet.
@@ -77,20 +82,26 @@ io.on('connection', socket => {
     console.log(socketKeys)
     console.log(turnPath)
     
+    socket.on('allready', function(){
+        socketKeys[socket.id].is_ready = true
+
+        readyVal = 0
+        for(socket.id in socketKeys){
+            if (socketKeys[socket.id].is_ready){
+                readyVal++
+            }
+        }
+
+        console.log("Ready Value: ", readyVal)
+        if (readyVal === Object.keys(socketKeys).length){
+            io.emit('turnStart', socketKeys, globalVars, turnPath)
+            console.log("Server Emitting Turn Start")
+        }
+    })
 
     //Function starts the game, once all players have said they are ready, it shoots off the first 'turnhappend' event to the client
     socket.on('allready', function(){
-        
-        //readyVal++ 
-        //if (readyVal === Object.keys(socketKeys).length){
-        //    //Fire off the first turn happened, selecting a random player to start: 
-//
-        //    socket.emit('turnStart', socketKeys, globalVars)
-//
-//
-//
-        //}
-        //If there are more than 6 players, they will be set to false and can only spectate. 
+
         for (let i = 0; i < turnPath.length; i++){
             if (i < 6){
                 socketKeys[turnPath[i][1]].is_playing = true
