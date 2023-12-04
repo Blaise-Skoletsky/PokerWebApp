@@ -13,12 +13,46 @@
  var localVars = {}
  var turnPath = []
  //When any turn happens, this updates the variables: arg contains the dictionaries containing all information
+ 
  socket.on('turnStart', function(arg, globalVars, turns) {
      allPlayers = arg
      localVars = globalVars
      turnPath = turns
      console.log(allPlayers)
      console.log(localVars)
+
+    // Display all players, their money, their cards, and their current bet
+    console.log("Num Players? : ", turns)
+    
+    // remove other players
+    var opponents_section = document.getElementById("opponents")
+    while (opponents_section.firstChild) {
+        opponents_section.removeChild(opponents_section.firstChild);
+    }
+
+    // repopulate players
+    for(socket.id in allPlayers){
+        var opponentHTML = "<div class='opponent'><div class='player-contents'><div class='player-image-container'><img src='card-back.png' alt='Card 1'><img src='card-back.png' alt='Card 2'></div><div class='player-info-container'><div class='player-info-box'><a class='player-name'>"+
+        allPlayers[socket.id]["name"]+
+        "</a><span class='money-count'>$"+
+        "0"+
+        "</span></div></div></div></div>"
+        var newOpponent = document.createElement('div')
+        newOpponent.innerHTML = opponentHTML
+        opponents_section.appendChild(newOpponent)
+    }
+
+
+    // for (var i = 0; i < turns.length; i++){
+    //     var opponentHTML = "<div class='opponent'><div class='player-contents'><div class='player-image-container'><img src='card-back.png' alt='Card 1'><img src='card-back.png' alt='Card 2'></div><div class='player-info-container'><div class='player-info-box'><a class='player-name'>"+
+    //     allPlayers[i]["name"]+
+    //     "</a><span class='money-count'>$"+
+    //     "0"+
+    //     "</span></div></div></div></div>"
+    //     var newOpponent = document.createElement('div')
+    //     newOpponent.innerHTML = opponentHTML
+    //     opponents_section.appendChild(newOpponent)
+    // }
 
      if (allPlayers[socket.id].is_playing){
         //Display their own cards, otherwise leave the backs showing
@@ -104,6 +138,9 @@ document.getElementById('ready-button').addEventListener('click', function () {
         allPlayers.forEach(function (player) {
             player.style.display = 'flex';
         });
+
+        socket.emit('allready')
+        console.log('start')
     } 
     else {
         alert('Please enter your name before readying up.');
