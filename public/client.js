@@ -6,7 +6,6 @@ const socket = io('http://localhost:3000')
 var callButton = document.getElementById('call-button')
 var raiseButton = document.getElementById('raise-button')
 var foldButton = document.getElementById('fold-button')
-var tempStart = document.getElementById('temp')
 //[Player Name(customizeable), Amount of money(before betting), currentBet, isTurn (boolean value), isPlaying (boolean value),hand(should be an array)
 //This is all information that is needed to display at every change in turn. 
 var allPlayers = {}
@@ -90,10 +89,7 @@ socket.on('turnStart', function(arg, globalVars, turns) {
          // Unhide the buttons, allow them to play
     }
 })
-tempStart.addEventListener('click', function(){
-    socket.emit('allready')
-    console.log('start')
-})
+
 callButton.addEventListener('click', function(){  
     console.log(socket.id)
     //Set turn to false
