@@ -1,25 +1,27 @@
 // **** socket stuff wasn't working properly so I commented it out for now to test out raise button functionality. *****
 
 
- //Might have to rename to socket. 
- const socket = io('http://localhost:3000')
- var callButton = document.getElementById('call-button')
- var raiseButton = document.getElementById('raise-button')
- var foldButton = document.getElementById('fold-button')
- var tempStart = document.getElementById('temp')
- //[Player Name(customizeable), Amount of money(before betting), currentBet, isTurn (boolean value), isPlaying (boolean value),hand(should be an array)
- //This is all information that is needed to display at every change in turn. 
- var allPlayers = {}
- var localVars = {}
- var turnPath = []
- //When any turn happens, this updates the variables: arg contains the dictionaries containing all information
+//Might have to rename to socket. 
+const socket = io('http://localhost:3000')
+var callButton = document.getElementById('call-button')
+var raiseButton = document.getElementById('raise-button')
+var foldButton = document.getElementById('fold-button')
+var tempStart = document.getElementById('temp')
+//[Player Name(customizeable), Amount of money(before betting), currentBet, isTurn (boolean value), isPlaying (boolean value),hand(should be an array)
+//This is all information that is needed to display at every change in turn. 
+var allPlayers = {}
+var localVars = {}
+var turnPath = []
+//When any turn happens, this updates the variables: arg contains the dictionaries containing all information
  
- socket.on('turnStart', function(arg, globalVars, turns) {
-     allPlayers = arg
-     localVars = globalVars
-     turnPath = turns
-     console.log(allPlayers)
-     console.log(localVars)
+
+
+socket.on('turnStart', function(arg, globalVars, turns) {
+    allPlayers = arg
+    localVars = globalVars
+    turnPath = turns
+    console.log(allPlayers)
+    console.log(localVars)
 
     // Display all players, their money, their cards, and their current bet
     console.log("Num Players? : ", turns)
@@ -32,6 +34,9 @@
 
     // repopulate players
     for(socket.id in allPlayers){
+
+
+
         var opponentHTML = "<div class='opponent'><div class='player-contents'><div class='player-image-container'><img src='card-back.png' alt='Card 1'><img src='card-back.png' alt='Card 2'></div><div class='player-info-container'><div class='player-info-box'><a class='player-name'>"+
         allPlayers[socket.id]["name"]+
         "</a><span class='money-count'>$"+
@@ -42,23 +47,11 @@
         opponents_section.appendChild(newOpponent)
     }
 
-
-    // for (var i = 0; i < turns.length; i++){
-    //     var opponentHTML = "<div class='opponent'><div class='player-contents'><div class='player-image-container'><img src='card-back.png' alt='Card 1'><img src='card-back.png' alt='Card 2'></div><div class='player-info-container'><div class='player-info-box'><a class='player-name'>"+
-    //     allPlayers[i]["name"]+
-    //     "</a><span class='money-count'>$"+
-    //     "0"+
-    //     "</span></div></div></div></div>"
-    //     var newOpponent = document.createElement('div')
-    //     newOpponent.innerHTML = opponentHTML
-    //     opponents_section.appendChild(newOpponent)
-    // }
-
-     if (allPlayers[socket.id].is_playing){
+    if (allPlayers[socket.id].is_playing){
         //Display their own cards, otherwise leave the backs showing
-     }
+    }
      
-     for (var i = 0; i < turnPath.length; i++){
+    for (var i = 0; i < turnPath.length; i++){
         if (allPlayers[turnPath[i][1]].is_playing){
             if (allPlayers[turnPath[i][1]].is_turn){
                 //If it is their turn, highlight their background green or do something to indicate it!
@@ -67,36 +60,36 @@
             //Display the amount each player has bet, total amount left, other info, ect.
 
         }
-     }
+    }
 
-     //Graphical information should update, player who's turn it is should be highlighted
-     if (localVars.game_progess === 'pre-flop'){
+    //Graphical information should update, player who's turn it is should be highlighted
+    if (localVars.game_progess === 'pre-flop'){
          //display no cards
-     }
-     else if (localVars.game_progess === 'flop'){
+    }
+    else if (localVars.game_progess === 'flop'){
          //display 3 cards
-     }
-     else if (localVars.game_progess === 'turn'){
+    }
+    else if (localVars.game_progess === 'turn'){
          //display 4 cards
-     }
-     else if (localVars.game_progess === 'river'){
+    }
+    else if (localVars.game_progess === 'river'){
          //display 5 cards
-     } 
-     if (localVars.currentPlayer === socket.id){
+    } 
+    if (localVars.currentPlayer === socket.id){
          // Unhide the buttons, allow them to play
-     }
- })
- tempStart.addEventListener('click', function(){
-     socket.emit('allready')
-     console.log('start')
- })
- callButton.addEventListener('click', function(){  
-     console.log(socket.id)
-     //Set turn to false
-     //allPlayers[socket.id].is_turn = false
-     //after checking, check to see if the game would end, if it does change the gameprogress var to 'declare-winner'
-     socket.emit('turnEnd', allPlayers, localVars)
- })
+    }
+})
+tempStart.addEventListener('click', function(){
+    socket.emit('allready')
+    console.log('start')
+})
+callButton.addEventListener('click', function(){  
+    console.log(socket.id)
+    //Set turn to false
+    //allPlayers[socket.id].is_turn = false
+    //after checking, check to see if the game would end, if it does change the gameprogress var to 'declare-winner'
+    socket.emit('turnEnd', allPlayers, localVars)
+})
 
 const raiseAmount = document.getElementById("raise-amount");
 
