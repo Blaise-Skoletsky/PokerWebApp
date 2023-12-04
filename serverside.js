@@ -63,7 +63,7 @@ io.on('connection', socket => {
 
     //On connection, socketID is mapped to the 
     if (!(socket.id in socketKeys)){
-        socketKeys[socket.id] = {'name': 'temp', 
+        socketKeys[socket.id] = {'name': 'Not Ready', 
                                 'total_money': 500,
                                 'current_bet': 0,
                                 'is_folded': false, //They have or haven't folded yet.

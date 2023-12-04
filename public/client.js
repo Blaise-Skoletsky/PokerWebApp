@@ -34,7 +34,6 @@ socket.on('turnStart', function(arg, globalVars, turns) {
 
     // repopulate players
     for(socket.id in allPlayers){
-
         // skip ourself
         if (allPlayers[socket.id]["name"] == ourName) {
             continue;
@@ -49,6 +48,15 @@ socket.on('turnStart', function(arg, globalVars, turns) {
         newOpponent.innerHTML = opponentHTML
         opponents_section.appendChild(newOpponent)
     }
+
+    // Display ourself
+    var ourHand = document.getElementsByClassName("own-name")
+    ourHand[0].innerText = ourName
+
+
+
+
+
 
     if (allPlayers[socket.id].is_playing){
         //Display their own cards, otherwise leave the backs showing
