@@ -1,5 +1,7 @@
 // **** socket stuff wasn't working properly so I commented it out for now to test out raise button functionality. *****
 
+//const e = require("express")
+
 
 //Might have to rename to socket. 
 const socket = io('http://localhost:3000')
@@ -9,11 +11,24 @@ var foldButton = document.getElementById('fold-button')
 //[Player Name(customizeable), Amount of money(before betting), currentBet, isTurn (boolean value), isPlaying (boolean value),hand(should be an array)
 //This is all information that is needed to display at every change in turn. 
 var allPlayers = {}
-var localVars = {}
+var localVars = {'game_progress': 'lobby'}
 var turnPath = []
 //When any turn happens, this updates the variables: arg contains the dictionaries containing all information
 
 var ourName = '';
+
+socket.on('readyClicked', function(){
+    const playerControls = document.querySelector('.person-player.player .player-controls');
+    playerControls.style.display = 'flex';
+    const allPlayers = document.querySelectorAll('.player');
+    allPlayers.forEach(function (player) {
+        player.style.display = 'flex';
+    });
+
+    socket.emit('allready')
+
+
+})
 
 socket.on('turnStart', function(arg, globalVars, turns) {
     allPlayers = arg
@@ -123,26 +138,23 @@ raiseButton.addEventListener('click', function(){
 document.getElementById('ready-button').addEventListener('click', function () {
     const playerNameInput = document.getElementById('player-name-input');
     const playerName = playerNameInput.value.trim();
+    if (localVars.game_progress === 'lobby'){
+        if (playerName !== '') {
+            ourName = playerName;
+            socket.emit('setPlayerName', playerName);
 
-    if (playerName !== '') {
-        ourName = playerName;
-        socket.emit('setPlayerName', playerName);
+            playerNameInput.style.display = 'none';
+            document.getElementById('ready-button').style.display = 'none';
 
-        playerNameInput.style.display = 'none';
-        document.getElementById('ready-button').style.display = 'none';
-
-        const playerControls = document.querySelector('.person-player.player .player-controls');
-        playerControls.style.display = 'flex';
-
-        const allPlayers = document.querySelectorAll('.player');
-        allPlayers.forEach(function (player) {
-            player.style.display = 'flex';
-        });
-
-        socket.emit('allready')
-        console.log('start')
-    } 
+            socket.emit('ready')
+            console.log('readied!')
+        } 
+        else {
+            alert('Please enter your name before readying up.');
+        }
+    }
     else {
-        alert('Please enter your name before readying up.');
+        playerNameInput.value = ''
     }
 });
+

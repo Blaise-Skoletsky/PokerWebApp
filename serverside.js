@@ -37,7 +37,7 @@ let globalVars = {'smallblind': -1,
                   'bigblind': 0, 
                   'table_bet': 0,
                   'round_bet': 0, 
-                  'game_progress': 'pre-flop', 
+                  'game_progress': 'lobby', 
                   'current_player': 0, 
                   'last_person_to_raise': 0,
                   'center': []}
@@ -82,31 +82,30 @@ io.on('connection', socket => {
     console.log(socketKeys)
     console.log(turnPath)
     
-    socket.on('allready', function(){
-        socketKeys[socket.id].is_ready = true
+    socket.on('ready', function(){
 
+      
+        socketKeys[socket.id].is_ready = true
+        socketKeys[socket.id].is_playing = true
         readyVal = 0
         for(socket.id in socketKeys){
             if (socketKeys[socket.id].is_ready){
                 readyVal++
             }
         }
-
         console.log("Ready Value: ", readyVal)
-        if (readyVal === Object.keys(socketKeys).length){
-            io.emit('turnStart', socketKeys, globalVars, turnPath)
-            console.log("Server Emitting Turn Start")
+        if (readyVal === Object.keys(socketKeys).length && Object.keys(socketKeys).length >= 3){
+            globalVars.game_progress = 'pre-flop'
+            io.emit('readyClicked')
         }
+
+
     })
 
     //Function starts the game, once all players have said they are ready, it shoots off the first 'turnhappend' event to the client
     socket.on('allready', function(){
 
-        for (let i = 0; i < turnPath.length; i++){
-            if (i < 6){
-                socketKeys[turnPath[i][1]].is_playing = true
-            }
-        }
+        globalVars.game_progress = 'pre-flop'
         
         //makes turns circular!!!
         globalVars.smallblind++
@@ -141,7 +140,7 @@ io.on('connection', socket => {
         }
 
 
-        socket.emit('turnStart', socketKeys, globalVars, turnPath)
+        io.emit('turnStart', socketKeys, globalVars, turnPath)
 
     })
 
@@ -195,11 +194,11 @@ io.on('connection', socket => {
 
             
             
-            //Run lukes code to distribute money. 
-            socket.emit('readyUp', socketKeys, globalVars, turnPath)
+            //Run lukes code to distribute money. Also need to design restart socket
+            io.emit('restart', socketKeys, globalVars, turnPath)
         }
         else {
-            socket.emit('turnStart', socketKeys, globalVars, turnPath)
+            io.emit('turnStart', socketKeys, globalVars, turnPath)
         }
 
 
