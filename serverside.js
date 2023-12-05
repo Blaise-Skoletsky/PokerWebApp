@@ -53,6 +53,9 @@ let readyVal = 0
 //Number of players
 let numPlayers = 0
 
+//Variable to make sure that the allready function doesn't run multiple times:
+let start = false
+
 
 io.on('connection', socket => {
 
@@ -105,43 +108,44 @@ io.on('connection', socket => {
     //Function starts the game, once all players have said they are ready, it shoots off the first 'turnhappend' event to the client
     socket.on('allready', function(){
 
-        globalVars.game_progress = 'pre-flop'
-        
-        //makes turns circular!!!
-        globalVars.smallblind++
-        if (globalVars.smallblind > turnPath.length-1 || globalVars.smallblind > 5){
-            globalVars.smallblind = 0
-        }
-
-
-         //Hopefully this works, if bigblind is ever at the last player, when it increments it circles back to 1
-        globalVars.bigblind++
-        if (globalVars.bigblind > turnPath.length-1 || globalVars.bigblind > 5){
-            globalVars.bigblind = 0
-        }
-
-        for (let i = 0; i < turnPath.length; i++){
-            //TO FUTURE ME: Might be an error in the if statements, hopefulyl acts as circular. 
-
-            if (turnPath[i][0] === globalVars.bigblind){
-                if (turnPath[i][0] === globalVars.bigblind) {
-                    const nextPlayerIndex = (i + 1) % turnPath.length
+        if (!start){
+            globalVars.game_progress = 'pre-flop'
             
-                    socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
-                    break
+            //makes turns circular!!!
+            globalVars.smallblind++
+            if (globalVars.smallblind > turnPath.length-1 || globalVars.smallblind > 5){
+                globalVars.smallblind = 0
+            }
+
+
+             //Hopefully this works, if bigblind is ever at the last player, when it increments it circles back to 1
+            globalVars.bigblind++
+            if (globalVars.bigblind > turnPath.length-1 || globalVars.bigblind > 5){
+                globalVars.bigblind = 0
+            }
+
+            for (let i = 0; i < turnPath.length; i++){
+                //TO FUTURE ME: Might be an error in the if statements, hopefulyl acts as circular. 
+
+                if (turnPath[i][0] === globalVars.bigblind){
+                    if (turnPath[i][0] === globalVars.bigblind) {
+                        const nextPlayerIndex = (i + 1) % turnPath.length
+                    
+                        socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
+                        break
+                    }
                 }
             }
+
+            gameDeck = poker.generateDeck()
+            globalVars.center = poker.centerGenerator(gameDeck)
+            for (let i = 0; i < turnPath.length; i++){
+                socketKeys[turnPath[i][1]].hand = poker.playerHandGenerator(gameDeck)
+            }
+
+            start = true
+            io.emit('turnStart', socketKeys, globalVars, turnPath)
         }
-
-        gameDeck = poker.generateDeck()
-        globalVars.center = poker.centerGenerator(gameDeck)
-        for (let i = 0; i < turnPath.length; i++){
-            socketKeys[turnPath[i][1]].hand = poker.playerHandGenerator(gameDeck)
-        }
-
-
-        io.emit('turnStart', socketKeys, globalVars, turnPath)
-
     })
 
     //When a player moves, all their information should be put back into the global info system: the map of the keys
