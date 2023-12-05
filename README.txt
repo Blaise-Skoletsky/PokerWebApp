@@ -6,7 +6,7 @@ Task:
 
  - Make the ready button only display the game once there is at least 3 players, and everyone has clicked ready. - Blaise
  - Order the players (Gabby)
- - ~~Make buttons avaliable only to the player with the is_turn variable~~ comment: successfully implemented - (Gabby)
+ - Make buttons avaliable only to the player with the is_turn variable comment: successfully implemented - (Gabby)
  - make current player green (Gabby)
  - Pot splitting / Determine winner | Luke
  - getting images to work - Mithun
