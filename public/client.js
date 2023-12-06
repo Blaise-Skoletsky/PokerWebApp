@@ -8,6 +8,9 @@ const socket = io('http://localhost:3000')
 var callButton = document.getElementById('call-button')
 var raiseButton = document.getElementById('raise-button')
 var foldButton = document.getElementById('fold-button')
+
+const raiseAmount = document.getElementById("raise-amount");
+
 //[Player Name(customizeable), Amount of money(before betting), currentBet, isTurn (boolean value), isPlaying (boolean value),hand(should be an array)
 //This is all information that is needed to display at every change in turn. 
 var allPlayers = {}
@@ -111,6 +114,7 @@ socket.on('turnStart', function(arg, globalVars, turns) {
                 callButton.classList.add("hidden");
                 raiseButton.classList.add("hidden");
                 foldButton.classList.add("hidden");
+                raiseAmount.style.display = "none";
             }
         }
     }
@@ -169,9 +173,6 @@ callButton.addEventListener('click', function(){
     //after checking, check to see if the game would end, if it does change the gameprogress var to 'declare-winner'
     socket.emit('turnEnd', allPlayers, localVars, turnPath)
 })
-
-const raiseAmount = document.getElementById("raise-amount");
-
 raiseButton.addEventListener('click', function(){
 
     if (raiseAmount.style.display == "none") {
@@ -181,14 +182,19 @@ raiseButton.addEventListener('click', function(){
         raiseButton.style.display = "inline-block";
     }
 
-    if (allPlayers[socket.id].total_money > 20){
-        allPlayers[socket.id].total_money = allPlayers[socket.id].total_money - 20
-        allPlayers[socket.id].current_bet = allPlayers[socket.id].current_bet + 20
-        
+})
 
-        socket.emit('turnEnd', allPlayers, localVars, turnPath)
+raiseAmount.addEventListener('keyup', function(event){
+
+    if (event.keyCode === 13){
+        if (allPlayers[socket.id].total_money > 20){
+            allPlayers[socket.id].total_money = allPlayers[socket.id].total_money - 20
+            allPlayers[socket.id].current_bet = allPlayers[socket.id].current_bet + 20
+            
+    
+            socket.emit('turnEnd', allPlayers, localVars, turnPath)
+        } 
     }
-
 })
 
 
