@@ -159,7 +159,7 @@ callButton.addEventListener('click', function(){
     //Set turn to false
     //allPlayers[socket.id].is_turn = false
     //after checking, check to see if the game would end, if it does change the gameprogress var to 'declare-winner'
-    socket.emit('turnEnd', allPlayers, localVars)
+    socket.emit('turnEnd', allPlayers, localVars, turnPath)
 })
 
 const raiseAmount = document.getElementById("raise-amount");
@@ -178,7 +178,7 @@ raiseButton.addEventListener('click', function(){
         allPlayers[socket.id].current_bet = allPlayers[socket.id].current_bet + 20
         
 
-        socket.emit('turnEnd', allPlayers, localVars)
+        socket.emit('turnEnd', allPlayers, localVars, turnPath)
     }
 
 })

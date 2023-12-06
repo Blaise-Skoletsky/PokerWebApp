@@ -156,42 +156,46 @@ io.on('connection', socket => {
 
         for(let i = 0; i < turnPath.length; i++){
             if (socketKeys[turnPath[i][1]].is_turn){
-                if(turnPath.length <= i+1){
-                    socketKeys[turnPath[0][1]].is_turn = true
-                }
-                else{
-                    socketKeys[turnPath[i+1][0]].is_turn = true
-                }
-            }
-        }
-        socketKeys[turnPath[i][1]].is_turn = false
-
-
-        for (let i = 0; i < turnPath.length; i++){
-            if (socketKeys[turnPath[i][1].is_turn] && globalVars.last_person_to_raise === i){
-                if (turnPath[i][0] === globalVars.bigblind){
-                    if (turnPath[i][0] === globalVars.bigblind) {
-                        const nextPlayerIndex = (i + 1) % turnPath.length
                 
-                        socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
-                        break
-                    }
-                }
+                console.log('hello')
+                
+                const nextPlayerIndex = (i + 1) % turnPath.length
+                socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
                 socketKeys[turnPath[i][1]].is_turn = false
-                if (globalVars.game_progress === 'pre-flop'){
-                    globalVars.game_progress = 'flop'
-                }
-                else if (globalVars.game_progress === 'flop'){
-                    globalVars.game_progress = 'turn'
-                }
-                else if (globalVars.game_progress === 'turn'){
-                    globalVars.game_progress = 'river'
-                }
-                else if (globalVars.game_progress === 'river'){
-                    globalVars.game_progress = 'done'
-                }
+
+                break
+
+
             }
         }
+
+
+        //for (let i = 0; i < turnPath.length; i++){
+        //    if (socketKeys[turnPath[i][1]].is_turn && globalVars.last_person_to_raise === i){
+        //        
+        //        if (turnPath[i][0] === globalVars.bigblind){
+        //            if (turnPath[i][0] === globalVars.bigblind) {
+        //                const nextPlayerIndex = (i + 1) % turnPath.length
+        //        
+        //                socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
+        //                break
+        //            }
+        //        }
+        //        socketKeys[turnPath[i][1]].is_turn = false
+        //        if (globalVars.game_progress === 'pre-flop'){
+        //            globalVars.game_progress = 'flop'
+        //        }
+        //        else if (globalVars.game_progress === 'flop'){
+        //            globalVars.game_progress = 'turn'
+        //        }
+        //        else if (globalVars.game_progress === 'turn'){
+        //            globalVars.game_progress = 'river'
+        //        }
+        //        else if (globalVars.game_progress === 'river'){
+        //            globalVars.game_progress = 'done'
+        //        }
+        //    }
+        //}
 
         if (globalVars.game_progress  === 'done'){
             
