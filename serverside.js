@@ -108,6 +108,16 @@ io.on('connection', socket => {
     //Function starts the game, once all players have said they are ready, it shoots off the first 'turnhappend' event to the client
     socket.on('allready', function(){
 
+        // for (let i = 0; i < turnPath.length; i++) {
+        //     const playerId = turnPath[i][1];
+        //     const { hand } = socketKeys[playerId];
+        
+        //     const card1Path = poker.getImage(hand[0]);
+        //     const card2Path = poker.getImage(hand[1]);
+        
+        //     updateCardImagesForPlayer(playerId, card1Path, card2Path);
+        // }
+
         if (!start){
             globalVars.game_progress = 'pre-flop'
             
@@ -239,8 +249,11 @@ io.on('connection', socket => {
 
 });
 
-
-
+// function updateCardImagesForPlayer(playerId, card1, card2) {
+//     console.log("test start to see if this update card thing works")
+//     io.emit('updateCardImages', { playerId, card1, card2 });
+//     console.log("test end to see if this update card thing works")
+// }
 
 
 server.listen(port, () => {

@@ -61,13 +61,21 @@ socket.on('turnStart', function(arg, globalVars, turns) {
             continue;
         }
         var opponentHTML =
-        "<div class='opponent'><div class='player-contents'><div class='player-image-container'>"+
-        "<img src='card-back.png' alt='Card 1'><img src='card-back.png' alt='Card 2'></div><div class='player-info-container'>"+
-        "<div class='player-info-box'><a class='player-name'>"+
-        allPlayers[socket.id]["name"]+
-        "</a><span class='money-count'>$"+
-        "0"+
-        "</span></div></div></div></div>"
+        "<div class='opponent'>"+
+            "<div class='player-contents'>"+
+                "<div class='player-image-container'>"+
+                    "<img src='card-back.png' alt='Card 1'>"+
+                    "<img src='card-back.png' alt='Card 2'>"+
+                "</div>"+
+                "<div class='player-info-container'>"+
+                    "<div class='player-info-box'>"+
+                        "<a class='player-name'>"+allPlayers[socket.id]["name"]+"</a>"+
+                        "<span class='money-made'>Total Winnings: $0</span>"+
+                        "<span class='bet-amount'>Bet Amount: $0</span>"+
+                    "</div>"+
+                "</div>"+
+            "</div>"+
+        "</div>"
         var newOpponent = document.createElement('div')
         newOpponent.innerHTML = opponentHTML
         if (allPlayers[socket.id]["is_turn"]){
@@ -206,4 +214,18 @@ document.getElementById('ready-button').addEventListener('click', function () {
         playerNameInput.value = ''
     }
 });
+
+// function updateCardImages(playerId, card1, card2) {
+//     const card1Element = document.getElementById(`mc1_${playerId}`);
+//     const card2Element = document.getElementById(`mc2_${playerId}`);
+
+//     if (card1Element && card2Element) {
+//         card1Element.src = card1;
+//         card2Element.src = card2;
+//     }
+// }
+
+// socket.on('updateCardImages', ({ playerId, card1, card2 }) => {
+//     updateCardImages(playerId, card1, card2);
+// });
 
