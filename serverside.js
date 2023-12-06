@@ -42,7 +42,8 @@ let globalVars = {'smallblind': -1,
                   'last_person_to_raise': 0,
                   'center': [],
                   'center-img': [],
-                  'ready_players': 0}
+                }
+
 
 
 //Array for turn paths! Every game should shift by 1: each index is [turn1, socket]
@@ -152,19 +153,27 @@ io.on('connection', socket => {
 
         for(let i = 0; i < turnPath.length; i++){
             if (socketKeys[turnPath[i][1]].is_turn){
-                if(turnPath.length <= i+1){
-                    socketKeys[turnPath[0][1]].is_turn = true
-                }
-                else{
-                    socketKeys[turnPath[i+1][0]].is_turn = true
-                }
+                
+        
+
+                const nextPlayerIndex = (i + 1) % turnPath.length
+                socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
+                socketKeys[turnPath[i][1]].is_turn = false
+
+                break
+
             }
         }
-        socketKeys[turnPath[i][1]].is_turn = false
 
 
         for (let i = 0; i < turnPath.length; i++){
-            if (socketKeys[turnPath[i][1].is_turn] && globalVars.last_person_to_raise === i){
+            if (socketKeys[turnPath[i][1]].is_turn && globalVars.last_person_to_raise === i){
+                for (let j = 0; j < turnPath.length; j++){
+                    if (socketKeys[turnPath[j][1]].is_turn){
+                        socketKeys[turnPath[j][1]].is_turn = false
+                    }
+                }
+
                 if (turnPath[i][0] === globalVars.bigblind){
                     if (turnPath[i][0] === globalVars.bigblind) {
                         const nextPlayerIndex = (i + 1) % turnPath.length
@@ -176,6 +185,7 @@ io.on('connection', socket => {
                 socketKeys[turnPath[i][1]].is_turn = false
                 if (globalVars.game_progress === 'pre-flop'){
                     globalVars.game_progress = 'flop'
+                    console.log('flop')
                 }
                 else if (globalVars.game_progress === 'flop'){
                     globalVars.game_progress = 'turn'
