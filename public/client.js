@@ -1,5 +1,7 @@
 // **** socket stuff wasn't working properly so I commented it out for now to test out raise button functionality. *****
 
+//const e = require("express")
+
 
 //Might have to rename to socket. 
 const socket = io('http://localhost:3000')
@@ -9,11 +11,24 @@ var foldButton = document.getElementById('fold-button')
 //[Player Name(customizeable), Amount of money(before betting), currentBet, isTurn (boolean value), isPlaying (boolean value),hand(should be an array)
 //This is all information that is needed to display at every change in turn. 
 var allPlayers = {}
-var localVars = {}
+var localVars = {'game_progress': 'lobby'}
 var turnPath = []
 //When any turn happens, this updates the variables: arg contains the dictionaries containing all information
 
 var ourName = '';
+
+socket.on('readyClicked', function(){
+    const playerControls = document.querySelector('.person-player.player .player-controls');
+    playerControls.style.display = 'flex';
+    const allPlayers = document.querySelectorAll('.player');
+    allPlayers.forEach(function (player) {
+        player.style.display = 'flex';
+    });
+
+    socket.emit('allready')
+
+
+})
 
 socket.on('turnStart', function(arg, globalVars, turns) {
     allPlayers = arg
@@ -31,28 +46,77 @@ socket.on('turnStart', function(arg, globalVars, turns) {
         opponents_section.removeChild(opponents_section.firstChild);
     }
 
+    // got our index
+    var ourIndex = -1;
+    for (var i = 0; i < turnPath.length; i++){
+        if (turnPath[i][1] == socket.id){
+            ourIndex = i;
+        }
+    }
+
     // repopulate players
     for(socket.id in allPlayers){
         // skip ourself
         if (allPlayers[socket.id]["name"] == ourName) {
             continue;
         }
-
-        var opponentHTML = "<div class='opponent'><div class='player-contents'><div class='player-image-container'><img src='card-back.png' alt='Card 1'><img src='card-back.png' alt='Card 2'></div><div class='player-info-container'><div class='player-info-box'><a class='player-name'>"+
+        var opponentHTML =
+        "<div class='opponent'><div class='player-contents'><div class='player-image-container'>"+
+        "<img src='card-back.png' alt='Card 1'><img src='card-back.png' alt='Card 2'></div><div class='player-info-container'>"+
+        "<div class='player-info-box'><a class='player-name'>"+
         allPlayers[socket.id]["name"]+
         "</a><span class='money-count'>$"+
         "0"+
         "</span></div></div></div></div>"
         var newOpponent = document.createElement('div')
         newOpponent.innerHTML = opponentHTML
+        if (allPlayers[socket.id]["is_turn"]){
+            newOpponent.childNodes[0].classList.add("green")
+        }
         opponents_section.appendChild(newOpponent)
     }
+
+    // Shift the elements so that the next player is always on our left
+
+
+    // Get the first m child elements
+    var firstMChildren = Array.from(opponents_section.children).slice(0, ourIndex);
+    firstMChildren.forEach(child => opponents_section.removeChild(child));
+    firstMChildren.forEach(child => opponents_section.appendChild(child));
 
     // Display ourself
     var ourHand = document.getElementsByClassName("own-name")
     ourHand[0].innerText = ourName
 
+    // Remove Call, Raise, Fold buttons if it is not our turn
+    var callButton = document.getElementById("call-button")
+    var raiseButton = document.getElementById("raise-button")
+    var foldButton = document.getElementById("fold-button")
+    // remove "hidden" class from each of these elements
+    callButton.classList.remove("hidden");
+    raiseButton.classList.remove("hidden");
+    foldButton.classList.remove("hidden");
+    for (socket.id in allPlayers){
+        if (allPlayers[socket.id]["name"] == ourName) {
+            if (allPlayers[socket.id]["is_turn"] == false){
+                // add "hidden" class from each of these elements
+                callButton.classList.add("hidden");
+                raiseButton.classList.add("hidden");
+                foldButton.classList.add("hidden");
+            }
+        }
+    }
 
+    // Make ourself green if its our turn
+    var ourPlayer = document.getElementsByClassName("person-player player")
+    ourPlayer[0].classList.remove("green")
+    for (socket.id in allPlayers){
+        if (allPlayers[socket.id]["name"] == ourName) {
+            if (allPlayers[socket.id]["is_turn"]){
+                ourPlayer[0].classList.add("green")
+            }
+        }
+    }
 
 
 
@@ -123,26 +187,23 @@ raiseButton.addEventListener('click', function(){
 document.getElementById('ready-button').addEventListener('click', function () {
     const playerNameInput = document.getElementById('player-name-input');
     const playerName = playerNameInput.value.trim();
+    if (localVars.game_progress === 'lobby'){
+        if (playerName !== '') {
+            ourName = playerName;
+            socket.emit('setPlayerName', playerName);
 
-    if (playerName !== '') {
-        ourName = playerName;
-        socket.emit('setPlayerName', playerName);
+            playerNameInput.style.display = 'none';
+            document.getElementById('ready-button').style.display = 'none';
 
-        playerNameInput.style.display = 'none';
-        document.getElementById('ready-button').style.display = 'none';
-
-        const playerControls = document.querySelector('.person-player.player .player-controls');
-        playerControls.style.display = 'flex';
-
-        const allPlayers = document.querySelectorAll('.player');
-        allPlayers.forEach(function (player) {
-            player.style.display = 'flex';
-        });
-
-        socket.emit('allready')
-        console.log('start')
-    } 
+            socket.emit('ready')
+            console.log('readied!')
+        } 
+        else {
+            alert('Please enter your name before readying up.');
+        }
+    }
     else {
-        alert('Please enter your name before readying up.');
+        playerNameInput.value = ''
     }
 });
+
