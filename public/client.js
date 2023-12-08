@@ -39,9 +39,6 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     turnPath = turns
     console.log(allPlayers)
     console.log(localVars)
-
-    // Display all players, their money, their cards, and their current bet
-    console.log("Num Players? : ", turns)
     
     // remove other players
     var opponents_section = document.getElementById("opponents")
@@ -140,47 +137,34 @@ socket.on('turnStart', function(arg, globalVars, turns) {
         }
     }
 
-
-
-
-    if (allPlayers[socket.id].is_playing){
-        //Display their own cards, otherwise leave the backs showing
-    }
-     
-    for (var i = 0; i < turnPath.length; i++){
-        if (allPlayers[turnPath[i][1]].is_playing){
-            if (allPlayers[turnPath[i][1]].is_turn){
-                //If it is their turn, highlight their background green or do something to indicate it!
-            }
-
-            //Display the amount each player has bet, total amount left, other info, ect.
-
+    if (localVars.game_progress === 'flop'){
+   
+        var centerImgs = document.getElementsByClassName('card')
+        for (i = 0; i < 3; i++){
+            centerImgs[i].src = localVars.center_img[i]
         }
-    }
-
-    //Graphical information should update, player who's turn it is should be highlighted
-    if (localVars.game_progess === 'pre-flop'){
-         //display no cards
-    }
-    else if (localVars.game_progess === 'flop'){
+        
          //display 3 cards
     }
-    else if (localVars.game_progess === 'turn'){
+    if (localVars.game_progress === 'turn'){
          //display 4 cards
+         var centerImgs = document.getElementsByClassName('card')
+        for (i = 0; i < 4; i++){
+            centerImgs[i].src = localVars.center_img[i]
+        }
     }
-    else if (localVars.game_progess === 'river'){
+    if (localVars.game_progress === 'river'){
          //display 5 cards
+         var centerImgs = document.getElementsByClassName('card')
+        for (i = 0; i < 5; i++){
+            centerImgs[i].src = localVars.center_img[i]
+        }
     } 
-    if (localVars.currentPlayer === socket.id){
-         // Unhide the buttons, allow them to play
-    }
+    
 })
 
 callButton.addEventListener('click', function(){  
-    console.log(socket.id)
-    //Set turn to false
-    //allPlayers[socket.id].is_turn = false
-    //after checking, check to see if the game would end, if it does change the gameprogress var to 'declare-winner'
+    
     socket.emit('turnEnd', allPlayers, localVars, turnPath)
 })
 raiseButton.addEventListener('click', function(){
@@ -220,7 +204,7 @@ document.getElementById('ready-button').addEventListener('click', function () {
             document.getElementById('ready-button').style.display = 'none';
 
             socket.emit('ready')
-            console.log('readied!')
+        
         } 
         else {
             alert('Please enter your name before readying up.');
@@ -231,17 +215,4 @@ document.getElementById('ready-button').addEventListener('click', function () {
     }
 });
 
-// function updateCardImages(playerId, card1, card2) {
-//     const card1Element = document.getElementById(`mc1_${playerId}`);
-//     const card2Element = document.getElementById(`mc2_${playerId}`);
-
-//     if (card1Element && card2Element) {
-//         card1Element.src = card1;
-//         card2Element.src = card2;
-//     }
-// }
-
-// socket.on('updateCardImages', ({ playerId, card1, card2 }) => {
-//     updateCardImages(playerId, card1, card2);
-// });
 

@@ -40,7 +40,8 @@ let globalVars = {'smallblind': -1,
                   'game_progress': 'lobby', 
                   'current_player': 0, 
                   'last_person_to_raise': 0,
-                  'center': []}
+                  'center': [],
+                  'center_img': []}
 
 
 //Array for turn paths! Every game should shift by 1: each index is [turn1, socket]
@@ -150,6 +151,10 @@ io.on('connection', socket => {
 
             gameDeck = poker.generateDeck()
             globalVars.center = poker.centerGenerator(gameDeck)
+            for (let i = 0; i < globalVars.center.length; i++){
+                globalVars.center_img.push(poker.getImage(globalVars.center[i]))
+            }
+
             for (let i = 0; i < turnPath.length; i++){
                 socketKeys[turnPath[i][1]].hand = poker.playerHandGenerator(gameDeck)
 
@@ -185,32 +190,32 @@ io.on('connection', socket => {
         }
 
 
-        //for (let i = 0; i < turnPath.length; i++){
-        //    if (socketKeys[turnPath[i][1]].is_turn && globalVars.last_person_to_raise === i){
-        //        
-        //        if (turnPath[i][0] === globalVars.bigblind){
-        //            if (turnPath[i][0] === globalVars.bigblind) {
-        //                const nextPlayerIndex = (i + 1) % turnPath.length
-        //        
-        //                socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
-        //                break
-        //            }
-        //        }
-        //        socketKeys[turnPath[i][1]].is_turn = false
-        //        if (globalVars.game_progress === 'pre-flop'){
-        //            globalVars.game_progress = 'flop'
-        //        }
-        //        else if (globalVars.game_progress === 'flop'){
-        //            globalVars.game_progress = 'turn'
-        //        }
-        //        else if (globalVars.game_progress === 'turn'){
-        //            globalVars.game_progress = 'river'
-        //        }
-        //        else if (globalVars.game_progress === 'river'){
-        //            globalVars.game_progress = 'done'
-        //        }
-        //    }
-        //}
+        for (let i = 0; i < turnPath.length; i++){
+            if (socketKeys[turnPath[i][1]].is_turn && globalVars.last_person_to_raise === i){
+
+                
+                socketKeys[turnPath[i][1]].is_turn = false
+
+
+                socketKeys[turnPath[globalVars.smallblind][1]].is_turn = true
+
+                if (globalVars.game_progress === 'pre-flop'){
+                    globalVars.game_progress = 'flop'
+                }
+                else if (globalVars.game_progress === 'flop'){
+                    globalVars.game_progress = 'turn'
+                }
+                else if (globalVars.game_progress === 'turn'){
+                    globalVars.game_progress = 'river'
+                }
+                else if (globalVars.game_progress === 'river'){
+                    globalVars.game_progress = 'done'
+                }
+
+                break
+
+            }
+        }
 
         if (globalVars.game_progress  === 'done'){
             
