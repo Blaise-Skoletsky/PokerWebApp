@@ -39,7 +39,12 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     turnPath = turns
     console.log(allPlayers)
     console.log(localVars)
-    
+
+    //display pot
+    var thePot = document.getElementById('pot')
+    thePot.innerText = "Total Pot: $" + localVars.table_bet
+
+
     // remove other players
     var opponents_section = document.getElementById("opponents")
     while (opponents_section.firstChild) {
@@ -58,6 +63,10 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     for(socket.id in allPlayers){
         // skip ourself
         if (allPlayers[socket.id]["name"] == ourName) {
+            var myMoney = document.getElementById('my-money')
+            var myBet = document.getElementById('my-bet')
+            myMoney.innerText= "Total Winnings: $" + allPlayers[socket.id].total_money
+            myBet.innerText = "Bet Amount: $" + allPlayers[socket.id].current_bet
             continue;
         }
         var opponentHTML =
@@ -70,8 +79,8 @@ socket.on('turnStart', function(arg, globalVars, turns) {
                 "<div class='player-info-container'>"+
                     "<div class='player-info-box'>"+
                         "<a class='player-name'>"+allPlayers[socket.id]["name"]+"</a>"+
-                        "<span class='money-made'>Total Winnings: $0</span>"+
-                        "<span class='bet-amount'>Bet Amount: $0</span>"+
+                        "<span class='money-made'>Total Winnings: $" + allPlayers[socket.id].total_money +"</span>"+
+                        "<span class='bet-amount'>Bet Amount: $" +allPlayers[socket.id].current_bet + "</span>"+
                     "</div>"+
                 "</div>"+
             "</div>"+
@@ -95,6 +104,8 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     // Display ourself
     var ourHand = document.getElementsByClassName("own-name")
     ourHand[0].innerText = ourName
+
+    
 
     // Remove Call, Raise, Fold buttons if it is not our turn
     var callButton = document.getElementById("call-button")
@@ -163,7 +174,25 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     
 })
 
-callButton.addEventListener('click', function(){  
+callButton.addEventListener('click', function(){
+    
+    console.log(socket.id) //Error here is that socket.id isn't the right one, need to id somehow
+
+    var difference = localVars.round_bet - allPlayers[socket.id].current_bet
+   
+    console.log(difference)
+
+
+    if (allPlayers[socket.id].total_money >= difference){
+        allPlayers[socket.id].current_bet += difference
+        allPlayers[socket.id].total_money -= difference
+        localVars.table_bet += difference
+    }
+    else {
+        localVars.table_bet += allPlayers[socket.id].total_money
+        allPlayers[socket.id].current_bet += allPlayers[socket.id.totalMoney]
+        allPlayers[socket.id].total_money = 0
+    }
     
     socket.emit('turnEnd', allPlayers, localVars, turnPath)
 })

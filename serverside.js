@@ -39,7 +39,7 @@ let globalVars = {'smallblind': -1,
                   'round_bet': 0, 
                   'game_progress': 'lobby', 
                   'current_player': 0, 
-                  'last_person_to_raise': 0,
+                  'last_person_to_raise': 2,
                   'center': [],
                   'center_img': []}
 
@@ -73,6 +73,7 @@ io.on('connection', socket => {
                                 'is_folded': false, //They have or haven't folded yet.
                                 'is_playing': false, //This means they are dealt hands and are in the 6 game lobby.
                                 'is_turn': false, //Currently have buttons showing, can make a move
+                                'inskip': false, // if true, means they are still in the game, but have no money, so they should be skipped in the turn order.
                                 'hand': [null],
                                 'hand_img': []}
 
@@ -95,6 +96,7 @@ io.on('connection', socket => {
         readyVal = 0
         for(socket.id in socketKeys){
             if (socketKeys[socket.id].is_ready){
+     
                 readyVal++
             }
         }
@@ -110,16 +112,6 @@ io.on('connection', socket => {
     //Function starts the game, once all players have said they are ready, it shoots off the first 'turnhappend' event to the client
     socket.on('allready', function(){
 
-        // for (let i = 0; i < turnPath.length; i++) {
-        //     const playerId = turnPath[i][1];
-        //     const { hand } = socketKeys[playerId];
-        
-        //     const card1Path = poker.getImage(hand[0]);
-        //     const card2Path = poker.getImage(hand[1]);
-        
-        //     updateCardImagesForPlayer(playerId, card1Path, card2Path);
-        // }
-
         if (!start){
             globalVars.game_progress = 'pre-flop'
             
@@ -130,11 +122,19 @@ io.on('connection', socket => {
             }
 
 
+
              //Hopefully this works, if bigblind is ever at the last player, when it increments it circles back to 1
             globalVars.bigblind++
             if (globalVars.bigblind > turnPath.length-1 || globalVars.bigblind > 5){
                 globalVars.bigblind = 0
             }
+
+            socketKeys[turnPath[globalVars.smallblind][1]].current_bet = 10
+            socketKeys[turnPath[globalVars.bigblind][1]].current_bet = 20
+
+            globalVars.table_bet = 30
+            globalVars.round_bet = 20
+
 
             for (let i = 0; i < turnPath.length; i++){
                 //TO FUTURE ME: Might be an error in the if statements, hopefulyl acts as circular. 
@@ -166,6 +166,8 @@ io.on('connection', socket => {
             }
 
             start = true
+
+
             io.emit('turnStart', socketKeys, globalVars, turnPath)
         }
     })
@@ -198,6 +200,8 @@ io.on('connection', socket => {
 
 
                 socketKeys[turnPath[globalVars.smallblind][1]].is_turn = true
+                globalVars.last_person_to_raise = globalVars.smallblind
+
 
                 if (globalVars.game_progress === 'pre-flop'){
                     globalVars.game_progress = 'flop'
