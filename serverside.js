@@ -174,8 +174,6 @@ io.on('connection', socket => {
         for(let i = 0; i < turnPath.length; i++){
             if (socketKeys[turnPath[i][1]].is_turn){
                 
-                console.log('hello')
-                
                 const nextPlayerIndex = (i + 1) % turnPath.length
                 socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
                 socketKeys[turnPath[i][1]].is_turn = false
