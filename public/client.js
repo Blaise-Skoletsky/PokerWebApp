@@ -124,6 +124,16 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     ourPlayer[0].classList.remove("green")
     for (socket.id in allPlayers){
         if (allPlayers[socket.id]["name"] == ourName) {
+
+            var img1 = document.getElementById('mc1')
+            var img2 = document.getElementById('mc2')
+
+            img1.src = allPlayers[socket.id].hand_img[0]
+            img2.src = allPlayers[socket.id].hand_img[1]
+
+
+
+
             if (allPlayers[socket.id]["is_turn"]){
                 ourPlayer[0].classList.add("green")
             }

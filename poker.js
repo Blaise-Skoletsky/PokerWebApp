@@ -10,26 +10,24 @@ module.exports = {
 
 function cardConversion(value){
     var convert = {
-        2: '2',
-        3: '3',
-        4: '4',
-        5: '5',
-        6: '6',
-        7: '7',
-        8: '8',
-        9: '9',
-        10: '10',
-        11: 'J',
-        12: 'Q',
-        13: 'K',
-        14: 'A',
+        '2': '2',
+        '3': '3',
+        '4': '4',
+        '5': '5',
+        '6': '6',
+        '7': '7',
+        '8': '8',
+        '9': '9',
+        '10': '10',
+        '11': 'J',
+        '12': 'Q',
+        '13': 'K',
+        '14': 'A',
     }
 
     return convert.value
 }
-
-const path = require('path');
-const IMAGES_FOLDER = 'PNG-cards-1.3';
+const IMAGES_FOLDER = 'cardfolder';
 
 function getImage(value) {
     var [cardValue, suit] = value;
@@ -45,8 +43,21 @@ function getImage(value) {
     else if(suit == 'C'){
         suit = 'clubs'
     }
+    if (cardValue == '11'){
+        cardValue = 'jack'
+    }
+    else if (cardValue == '12'){
+        cardValue = 'queen'
+    }
+    else if (cardValue == '13'){
+        cardValue = 'king'
+    }
+    else if (cardValue == '14'){
+        cardValue = 'ace'
+    }
+
     const filename = `${cardValue}_of_${suit}.png`;
-    const imagePath = path.join(__dirname, IMAGES_FOLDER, filename);
+    const imagePath = IMAGES_FOLDER + '/' + filename;
 
     return imagePath;
 }
@@ -225,7 +236,7 @@ function evaluatePokerHand(cards) {
             }
         }
 
-        return [8, Math.max(...finalArr)]
+        return [80, Math.max(...finalArr)]
 
     }
     
@@ -236,7 +247,7 @@ function evaluatePokerHand(cards) {
         if (value === 4){
             for (i = 0; i < sortedCards.length;i++){
                 if (key != sortedCards[i][0]){
-                    return [7, parseInt(key), sortedCards[i][0]]
+                    return [70, parseInt(key), sortedCards[i][0]]
                 }
             }
 
@@ -266,7 +277,7 @@ function evaluatePokerHand(cards) {
         return [6, Math.max(thrice[2], thrice[3]), Math.min(thrice[2], thrice[3])]
     }
     if (thrice[1] === 1 && twice[0] === true){
-        return [6, thrice[2], twice[1]]
+        return [60, thrice[2], twice[1]]
     }
 
     // Check for flush - Done!
@@ -278,7 +289,7 @@ function evaluatePokerHand(cards) {
                 suit = suitsMap[i]
             }
         }
-        let thing = [5]
+        let thing = [50]
         for(let i = 0; i <sortedCards.length; i++){
             if (sortedCards[i][1] == suit){
                 thing.push(sortedCards[i][0])
@@ -311,14 +322,14 @@ function evaluatePokerHand(cards) {
                 finalArr.push(sortedCards[i][0])
             }
         }
-        return [4, Math.max(...finalArr)]
+        return [40, Math.max(...finalArr)]
 
     }
 
     // Check for three of a kind - Done
     for (const [key, value] of Object.entries(cardCounts)){
         if (value === 3){
-            let things = [3, parseInt(key)]
+            let things = [30, parseInt(key)]
             for (i = 0; i < sortedCards.length;i++){
                 if (key != sortedCards[i][0]){
                     things.push(sortedCards[i][0])
@@ -349,7 +360,7 @@ function evaluatePokerHand(cards) {
 
         for (let i = 0; i < sortedCards.length; i++){
             if (sortedCards[i][0] != val1 && sortedCards[i][0] != val2){
-                return [2, val1, val2, sortedCards[i][0]]
+                return [20, val1, val2, sortedCards[i][0]]
 
             }
         }
@@ -360,7 +371,7 @@ function evaluatePokerHand(cards) {
 
     for (const [key, value] of Object.entries(cardCounts)){
         if (value === 2){
-            let pairsList2 = [1]
+            let pairsList2 = [10]
             pairsList2.push(parseInt(key))
             for (let i = 0; i < sortedCards.length; i++){
                 
@@ -376,12 +387,15 @@ function evaluatePokerHand(cards) {
     
 
     // If no specific hand is detected, return a default result
-    return [0, sortedCards[0][0], sortedCards[1][0], sortedCards[2][0], sortedCards[3][0], sortedCards[4][0]];
+    return [1, sortedCards[0][0], sortedCards[1][0], sortedCards[2][0], sortedCards[3][0], sortedCards[4][0]];
 }
+
+
 
 // Example usage
 const cards = [[6, 'S'], [5, 'S'], [4, 'S'], [3, 'S'], [2, 'S'], [4, 'S'], [9, 'H']];
 const result = evaluatePokerHand(cards);
+
 console.log(result);
 
 

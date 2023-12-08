@@ -72,7 +72,8 @@ io.on('connection', socket => {
                                 'is_folded': false, //They have or haven't folded yet.
                                 'is_playing': false, //This means they are dealt hands and are in the 6 game lobby.
                                 'is_turn': false, //Currently have buttons showing, can make a move
-                                'hand': [null]}
+                                'hand': [null],
+                                'hand_img': []}
 
         turnPath.push([0, socket.id])
         for (let i = 0; i < turnPath.length; i++){
@@ -151,6 +152,12 @@ io.on('connection', socket => {
             globalVars.center = poker.centerGenerator(gameDeck)
             for (let i = 0; i < turnPath.length; i++){
                 socketKeys[turnPath[i][1]].hand = poker.playerHandGenerator(gameDeck)
+
+                for (let j = 0; j < 2; j++){
+
+                    socketKeys[turnPath[i][1]].hand_img.push(poker.getImage(socketKeys[turnPath[i][1]].hand[j]))
+                }
+
             }
 
             start = true
