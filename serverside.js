@@ -70,6 +70,7 @@ io.on('connection', socket => {
         socketKeys[socket.id] = {'name': 'Not Ready', 
                                 'total_money': 500,
                                 'current_bet': 0,
+                                'total_bet': 0,
                                 'is_folded': false, //They have or haven't folded yet.
                                 'is_playing': false, //This means they are dealt hands and are in the 6 game lobby.
                                 'is_turn': false, //Currently have buttons showing, can make a move
@@ -128,9 +129,12 @@ io.on('connection', socket => {
             if (globalVars.bigblind > turnPath.length-1 || globalVars.bigblind > 5){
                 globalVars.bigblind = 0
             }
-
+            socketKeys[turnPath[globalVars.smallblind][1]].total_money -= 10
             socketKeys[turnPath[globalVars.smallblind][1]].current_bet = 10
+            socketKeys[turnPath[globalVars.smallblind][1]].total_bet += 10
+            socketKeys[turnPath[globalVars.bigblind][1]].total_money -= 20
             socketKeys[turnPath[globalVars.bigblind][1]].current_bet = 20
+            socketKeys[turnPath[globalVars.bigblind][1]].total_bet += 20
 
             globalVars.table_bet = 30
             globalVars.round_bet = 20
@@ -205,15 +209,39 @@ io.on('connection', socket => {
 
                 if (globalVars.game_progress === 'pre-flop'){
                     globalVars.game_progress = 'flop'
+
+                    globalVars.round_bet = 0
+
+                    for (j = 0; j < turnPath.length; j++){
+                        socketKeys[turnPath[j][1]].current_bet = 0
+                    }
                 }
                 else if (globalVars.game_progress === 'flop'){
                     globalVars.game_progress = 'turn'
+
+                    globalVars.round_bet = 0
+
+                    for (j = 0; j < turnPath.length; j++){
+                        socketKeys[turnPath[j][1]].current_bet = 0
+                    }
                 }
                 else if (globalVars.game_progress === 'turn'){
                     globalVars.game_progress = 'river'
+
+                    globalVars.round_bet = 0
+
+                    for (j = 0; j < turnPath.length; j++){
+                        socketKeys[turnPath[j][1]].current_bet = 0
+                    }
                 }
                 else if (globalVars.game_progress === 'river'){
                     globalVars.game_progress = 'done'
+
+                    globalVars.round_bet = 0
+
+                    for (j = 0; j < turnPath.length; j++){
+                        socketKeys[turnPath[j][1]].current_bet = 0
+                    }
                 }
 
                 break
