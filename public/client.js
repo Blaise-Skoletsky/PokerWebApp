@@ -176,7 +176,7 @@ socket.on('turnStart', function(arg, globalVars, turns) {
 
 callButton.addEventListener('click', function(){
     
-    console.log(socket.id) //Error here is that socket.id isn't the right one, need to id somehow
+    
 
     for(socket.id in allPlayers){
 
@@ -200,6 +200,8 @@ callButton.addEventListener('click', function(){
             }
         }
     }
+
+    console.log(turnPath)
     
     socket.emit('turnEnd', allPlayers, localVars, turnPath)
 })
@@ -277,8 +279,17 @@ foldButton.addEventListener('click', function(){
         }
         
     }
-
-    console.log('made it')
     socket.emit('turnEnd', allPlayers, localVars, turnPath)
 
+})
+
+
+
+socket.on('restart', function(arg, globalVars, turns){
+    allPlayers = arg
+    localVars = globalVars
+    turnPath = turns
+
+    //Run the code to hide screen?
+    socket.emit('allready')
 })

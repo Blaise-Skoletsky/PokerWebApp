@@ -115,8 +115,14 @@ io.on('connection', socket => {
 
         if (!start){
             globalVars.game_progress = 'pre-flop'
+
+            for (let i = 0; i < turnPath.length; i++){
+                if (socketKeys[turnPath[i][1]].total_money <= 0){
+                    socketKeys[turnPath[i][1]].inskip = true
+                }
+            }
             
-            //makes turns circular!!!
+            //makes turns circular!!! - Also skip inskip people
             globalVars.smallblind++
             if (globalVars.smallblind > turnPath.length-1 || globalVars.smallblind > 5){
                 globalVars.smallblind = 0
@@ -129,6 +135,8 @@ io.on('connection', socket => {
             if (globalVars.bigblind > turnPath.length-1 || globalVars.bigblind > 5){
                 globalVars.bigblind = 0
             }
+
+            //Make sure they have enough money!
             socketKeys[turnPath[globalVars.smallblind][1]].total_money -= 10
             socketKeys[turnPath[globalVars.smallblind][1]].current_bet = 10
             socketKeys[turnPath[globalVars.smallblind][1]].total_bet += 10
@@ -141,7 +149,6 @@ io.on('connection', socket => {
 
 
             for (let i = 0; i < turnPath.length; i++){
-                //TO FUTURE ME: Might be an error in the if statements, hopefulyl acts as circular. 
 
                 if (turnPath[i][0] === globalVars.bigblind){
                     if (turnPath[i][0] === globalVars.bigblind) {
@@ -193,16 +200,28 @@ io.on('connection', socket => {
             //Do a win message!!
             //Game should end
             console.log('One player is left')
+
+            for (let i = 0; i < turnPath.length; i++){
+                if (!socketKeys[turnPath[i][1]].is_folded){
+                    socketKeys[turnPath[i][1]].total_money += globalVars.table_bet
+                }
+            }
+
+            reset()
+
+            io.emit('restart', socketKeys, globalVars, turnPath)
+
             
         } else{
                 for (let i = 0; i < turnPath.length; i++) {
                     if (socketKeys[turnPath[i][1]].is_turn) {
-                        for (let j = 1; j <= turnPath.length; j++) {
+                        for (let j = 1; j < turnPath.length; j++) {
                             const nextPlayerIndex = (i + j) % turnPath.length;
 
                             if (!socketKeys[turnPath[nextPlayerIndex][1]].is_folded) {
                                 socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true;
                                 socketKeys[turnPath[i][1]].is_turn = false;
+
                                 break;
                             }
                         }
@@ -217,7 +236,7 @@ io.on('connection', socket => {
 
                         socketKeys[turnPath[i][1]].is_turn = false
                     
-                        for (let x = 0; x < turnPath.length; x++){
+                        for (let x = 1; x < turnPath.length; x++){
                             const nextPlayerIndex = (globalVars.smallblind + x) % turnPath.length
                             if (!socketKeys[turnPath[nextPlayerIndex][1]].is_folded){
                                 socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
@@ -270,20 +289,6 @@ io.on('connection', socket => {
             }
 
 
-            for (let i = 0; i < turnPath.length; i++) {
-                if (socketKeys[turnPath[i][1]].is_turn) {
-                    for (let j = 1; j <= turnPath.length; j++) {
-                        const nextPlayerIndex = (i + j) % turnPath.length;
-
-                        if (!socketKeys[turnPath[nextPlayerIndex][1]].is_folded) {
-                            socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true;
-                            socketKeys[turnPath[i][1]].is_turn = false;
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
 
             if (globalVars.game_progress  === 'done'){
             
@@ -330,13 +335,32 @@ io.on('connection', socket => {
 
 });
 
-// function updateCardImagesForPlayer(playerId, card1, card2) {
-//     console.log("test start to see if this update card thing works")
-//     io.emit('updateCardImages', { playerId, card1, card2 });
-//     console.log("test end to see if this update card thing works")
-// }
 
 
 server.listen(port, () => {
     console.log(`Server started at http://localhost:${port}`);
 });
+
+
+
+function reset(){
+    globalVars.table_bet = 0
+    globalVars.round_bet = 0
+    globalVars.game_progress = 'lobby'
+    globalVars.current_player = 0
+    globalVars.last_person_to_raise = 2 //Change later
+    globalVars.center = []
+    globalVars.center_img = []
+
+    for (let z = 0; z < turnPath.length; z++){
+        socketKeys[turnPath[z][1]].current_bet = 0
+        socketKeys[turnPath[z][1]].is_folded = false
+        socketKeys[turnPath[z][1]].is_turn = false
+        socketKeys[turnPath[z][1]].inskip = false
+        socketKeys[turnPath[z][1]].hand = [null]
+        socketKeys[turnPath[z][1]].hand_img = []
+    }
+
+    //Code to go back to lobby maybe? 
+
+}
