@@ -184,6 +184,7 @@ callButton.addEventListener('click', function(){
         if (allPlayers[socket.id].name == ourName){
 
             var difference = localVars.round_bet - allPlayers[socket.id].current_bet
+            console.log(difference)
 
             if (allPlayers[socket.id].total_money >= difference){
                 allPlayers[socket.id].current_bet += difference
@@ -218,15 +219,19 @@ raiseAmount.addEventListener('keyup', function(event){
     if (event.keyCode === 13){
 
         var raise = parseInt(raiseAmount.value)
+        
 
         for (let i = 0; i < turnPath.length; i++){
             if (allPlayers[turnPath[i][1]].name == ourName){
+                if (raise + allPlayers[turnPath[i][1]].current_bet <= localVars.round_bet){
+                    break
+                }
                 if (allPlayers[turnPath[i][1]].total_money >= raise){
                     allPlayers[turnPath[i][1]].total_money -= raise
                     allPlayers[turnPath[i][1]].total_bet += raise
                     allPlayers[turnPath[i][1]].current_bet += raise
                     localVars.table_bet += raise
-                    localVars.round_bet += raise
+                    localVars.round_bet = raise 
                     localVars.last_person_to_raise = i
 
                     socket.emit('turnEnd', allPlayers, localVars, turnPath)
@@ -264,4 +269,16 @@ document.getElementById('ready-button').addEventListener('click', function () {
     }
 });
 
+foldButton.addEventListener('click', function(){
+    for (let i = 0; i < turnPath.length; i++){
+        if (allPlayers[turnPath[i][1]].name == ourName){
+            allPlayers[turnPath[i][1]].is_folded = true
+            break
+        }
+        
+    }
 
+    console.log('made it')
+    socket.emit('turnEnd', allPlayers, localVars, turnPath)
+
+})

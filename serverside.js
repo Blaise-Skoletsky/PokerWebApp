@@ -182,84 +182,123 @@ io.on('connection', socket => {
         globalVars = localVars
         turnPath = order
 
-        for(let i = 0; i < turnPath.length; i++){
-            if (socketKeys[turnPath[i][1]].is_turn){
-                
-                const nextPlayerIndex = (i + 1) % turnPath.length
-                socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
-                socketKeys[turnPath[i][1]].is_turn = false
-
-                break
-
-
-            }
-        }
-
-
+        let inCount = 0
         for (let i = 0; i < turnPath.length; i++){
-            if (socketKeys[turnPath[i][1]].is_turn && globalVars.last_person_to_raise === i){
-
-                
-                socketKeys[turnPath[i][1]].is_turn = false
-
-
-                socketKeys[turnPath[globalVars.smallblind][1]].is_turn = true
-                globalVars.last_person_to_raise = globalVars.smallblind
-
-
-                if (globalVars.game_progress === 'pre-flop'){
-                    globalVars.game_progress = 'flop'
-
-                    globalVars.round_bet = 0
-
-                    for (j = 0; j < turnPath.length; j++){
-                        socketKeys[turnPath[j][1]].current_bet = 0
-                    }
-                }
-                else if (globalVars.game_progress === 'flop'){
-                    globalVars.game_progress = 'turn'
-
-                    globalVars.round_bet = 0
-
-                    for (j = 0; j < turnPath.length; j++){
-                        socketKeys[turnPath[j][1]].current_bet = 0
-                    }
-                }
-                else if (globalVars.game_progress === 'turn'){
-                    globalVars.game_progress = 'river'
-
-                    globalVars.round_bet = 0
-
-                    for (j = 0; j < turnPath.length; j++){
-                        socketKeys[turnPath[j][1]].current_bet = 0
-                    }
-                }
-                else if (globalVars.game_progress === 'river'){
-                    globalVars.game_progress = 'done'
-
-                    globalVars.round_bet = 0
-
-                    for (j = 0; j < turnPath.length; j++){
-                        socketKeys[turnPath[j][1]].current_bet = 0
-                    }
-                }
-
-                break
-
+            if (!socketKeys[turnPath[i][1]].is_folded){
+                inCount++
             }
         }
+        if(inCount === 1){
 
-        if (globalVars.game_progress  === 'done'){
+            //Do a win message!!
+            //Game should end
+            console.log('One player is left')
+            
+        } else{
+                for (let i = 0; i < turnPath.length; i++) {
+                    if (socketKeys[turnPath[i][1]].is_turn) {
+                        for (let j = 1; j <= turnPath.length; j++) {
+                            const nextPlayerIndex = (i + j) % turnPath.length;
+
+                            if (!socketKeys[turnPath[nextPlayerIndex][1]].is_folded) {
+                                socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true;
+                                socketKeys[turnPath[i][1]].is_turn = false;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            
+            
+                for (let i = 0; i < turnPath.length; i++){
+                    if (socketKeys[turnPath[i][1]].is_turn && globalVars.last_person_to_raise === i){
+                    
+
+                        socketKeys[turnPath[i][1]].is_turn = false
+                    
+                        for (let x = 0; x < turnPath.length; x++){
+                            const nextPlayerIndex = (globalVars.smallblind + x) % turnPath.length
+                            if (!socketKeys[turnPath[nextPlayerIndex][1]].is_folded){
+                                socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
+                                globalVars.last_person_to_raise = nextPlayerIndex
+                                break
+                            }
+                        }
+                    
+                    
+                        if (globalVars.game_progress === 'pre-flop'){
+                            globalVars.game_progress = 'flop'
+                        
+                            globalVars.round_bet = 0
+                        
+                            for (j = 0; j < turnPath.length; j++){
+                                socketKeys[turnPath[j][1]].current_bet = 0
+                            }
+                        }
+                        else if (globalVars.game_progress === 'flop'){
+                            globalVars.game_progress = 'turn'
+                        
+                            globalVars.round_bet = 0
+                        
+                            for (j = 0; j < turnPath.length; j++){
+                                socketKeys[turnPath[j][1]].current_bet = 0
+                            }
+                        }
+                        else if (globalVars.game_progress === 'turn'){
+                            globalVars.game_progress = 'river'
+                        
+                            globalVars.round_bet = 0
+                        
+                            for (j = 0; j < turnPath.length; j++){
+                                socketKeys[turnPath[j][1]].current_bet = 0
+                            }
+                        }
+                        else if (globalVars.game_progress === 'river'){
+                            globalVars.game_progress = 'done'
+                        
+                            globalVars.round_bet = 0
+                        
+                            for (j = 0; j < turnPath.length; j++){
+                                socketKeys[turnPath[j][1]].current_bet = 0
+                            }
+                        }
+                    
+                        break
+                    
+                    }
+            }
+
+
+            for (let i = 0; i < turnPath.length; i++) {
+                if (socketKeys[turnPath[i][1]].is_turn) {
+                    for (let j = 1; j <= turnPath.length; j++) {
+                        const nextPlayerIndex = (i + j) % turnPath.length;
+
+                        if (!socketKeys[turnPath[nextPlayerIndex][1]].is_folded) {
+                            socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true;
+                            socketKeys[turnPath[i][1]].is_turn = false;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (globalVars.game_progress  === 'done'){
             
 
             
             
-            //Run lukes code to distribute money. Also need to design restart socket
-            io.emit('restart', socketKeys, globalVars, turnPath)
+                //Run lukes code to distribute money. Also need to design restart socket
+                io.emit('restart', socketKeys, globalVars, turnPath)
+            }
+            else {
+                io.emit('turnStart', socketKeys, globalVars, turnPath)
+            }
+
         }
-        else {
-            io.emit('turnStart', socketKeys, globalVars, turnPath)
-        }
+
 
 
 
