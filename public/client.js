@@ -155,6 +155,12 @@ socket.on('turnStart', function(arg, globalVars, turns) {
             }
         }
     }
+    if (localVars.game_progress === 'pre-flop'){
+        var centerImgs = document.getElementsByClassName('card')
+        for (let i =0 ;i < 5; i++){
+            centerImgs[i].src = 'card-back.png'
+        }
+    }
 
     if (localVars.game_progress === 'flop'){
    

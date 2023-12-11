@@ -199,7 +199,7 @@ io.on('connection', socket => {
 
             //Do a win message!!
             //Game should end
-            console.log('One player is left')
+
 
             for (let i = 0; i < turnPath.length; i++){
                 if (!socketKeys[turnPath[i][1]].is_folded){
@@ -361,6 +361,6 @@ function reset(){
         socketKeys[turnPath[z][1]].hand_img = []
     }
 
+    start = false
     //Code to go back to lobby maybe? 
-
 }
