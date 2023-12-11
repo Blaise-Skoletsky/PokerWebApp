@@ -240,7 +240,7 @@ raiseAmount.addEventListener('keyup', function(event){
         
 
         for (let i = 0; i < turnPath.length; i++){
-            if (allPlayers[turnPath[i][1]].name == ourName){
+            if (turnPath[i][1] == ourSocketId){
                 if (raise + allPlayers[turnPath[i][1]].current_bet <= localVars.round_bet){
                     break
                 }
@@ -301,10 +301,12 @@ foldButton.addEventListener('click', function(){
 
 
 
-socket.on('restart', function(arg, globalVars, turns){
+socket.on('restart', function(arg, globalVars, turns, winner){
     allPlayers = arg
     localVars = globalVars
     turnPath = turns
+
+    alert(winner + ' wins!')
 
     //Run the code to hide screen?
     socket.emit('allready')
