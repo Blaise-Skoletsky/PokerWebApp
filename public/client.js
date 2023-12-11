@@ -100,6 +100,9 @@ socket.on('turnStart', function(arg, globalVars, turns) {
         if (allPlayers[socket.id]["is_turn"]){
             newOpponent.childNodes[0].classList.add("green")
         }
+        if(allPlayers[socket.id]["is_folded"]){
+            newOpponent.childNodes[0].classList.add('red')
+        }
         opponents_section.appendChild(newOpponent)
     }
 
@@ -138,6 +141,7 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     // Make ourself green if its our turn
     var ourPlayer = document.getElementsByClassName("person-player player")
     ourPlayer[0].classList.remove("green")
+    ourPlayer[0].classList.remove('red')
     for (socket.id in allPlayers){
         if (socket.id == ourSocketId) {
 
@@ -152,6 +156,9 @@ socket.on('turnStart', function(arg, globalVars, turns) {
 
             if (allPlayers[socket.id]["is_turn"]){
                 ourPlayer[0].classList.add("green")
+            }
+            if(allPlayers[socket.id]["is_folded"]){
+                ourPlayer[0].classList.add('red')
             }
         }
     }
