@@ -19,6 +19,9 @@ var turnPath = []
 //When any turn happens, this updates the variables: arg contains the dictionaries containing all information
 
 var ourName = '';
+var ourSocketId = '';
+var ourIndex = -1;
+var indexAllreadyFound = false
 
 socket.on('readyClicked', function(){
     const playerControls = document.querySelector('.person-player.player .player-controls');
@@ -29,6 +32,8 @@ socket.on('readyClicked', function(){
     });
 
     socket.emit('allready')
+    ourSocketId = socket.id
+    //console.log("== ourSocketId: ", ourSocketId)
 
 
 })
@@ -51,18 +56,23 @@ socket.on('turnStart', function(arg, globalVars, turns) {
         opponents_section.removeChild(opponents_section.firstChild);
     }
 
-    // got our index
-    var ourIndex = -1;
-    for (var i = 0; i < turnPath.length; i++){
-        if (turnPath[i][1] == socket.id){
-            ourIndex = i;
+    // get our index
+    
+    if (indexAllreadyFound == false){
+        for (var i = 0; i < turnPath.length; i++){
+            if (turnPath[i][1] == socket.id){
+                ourIndex = i;
+            }
         }
+        indexAllreadyFound = true
     }
+
+    console.log("ourIndex", ourIndex)
 
     // repopulate players
     for(socket.id in allPlayers){
         // skip ourself
-        if (allPlayers[socket.id]["name"] == ourName) {
+        if (socket.id == ourSocketId) {
             var myMoney = document.getElementById('my-money')
             var myBet = document.getElementById('my-bet')
             myMoney.innerText= "Total Winnings: $" + allPlayers[socket.id].total_money
@@ -94,8 +104,6 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     }
 
     // Shift the elements so that the next player is always on our left
-
-
     // Get the first m child elements
     var firstMChildren = Array.from(opponents_section.children).slice(0, ourIndex);
     firstMChildren.forEach(child => opponents_section.removeChild(child));
@@ -116,7 +124,7 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     raiseButton.classList.remove("hidden");
     foldButton.classList.remove("hidden");
     for (socket.id in allPlayers){
-        if (allPlayers[socket.id]["name"] == ourName) {
+        if (socket.id == ourSocketId) {
             if (allPlayers[socket.id]["is_turn"] == false){
                 // add "hidden" class from each of these elements
                 callButton.classList.add("hidden");
@@ -131,7 +139,7 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     var ourPlayer = document.getElementsByClassName("person-player player")
     ourPlayer[0].classList.remove("green")
     for (socket.id in allPlayers){
-        if (allPlayers[socket.id]["name"] == ourName) {
+        if (socket.id == ourSocketId) {
 
             var img1 = document.getElementById('mc1')
             var img2 = document.getElementById('mc2')
@@ -175,13 +183,8 @@ socket.on('turnStart', function(arg, globalVars, turns) {
 })
 
 callButton.addEventListener('click', function(){
-    
-    
-
     for(socket.id in allPlayers){
-
-
-        if (allPlayers[socket.id].name == ourName){
+        if (socket.id == ourSocketId){
 
             var difference = localVars.round_bet - allPlayers[socket.id].current_bet
             console.log(difference)
