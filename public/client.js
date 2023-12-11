@@ -19,6 +19,9 @@ var turnPath = []
 //When any turn happens, this updates the variables: arg contains the dictionaries containing all information
 
 var ourName = '';
+var ourSocketId = '';
+var ourIndex = -1;
+var indexAllreadyFound = false
 
 socket.on('readyClicked', function(){
     const playerControls = document.querySelector('.person-player.player .player-controls');
@@ -29,6 +32,8 @@ socket.on('readyClicked', function(){
     });
 
     socket.emit('allready')
+    ourSocketId = socket.id
+    //console.log("== ourSocketId: ", ourSocketId)
 
 
 })
@@ -40,27 +45,38 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     console.log(allPlayers)
     console.log(localVars)
 
-    // Display all players, their money, their cards, and their current bet
-    console.log("Num Players? : ", turns)
-    
+    //display pot
+    var thePot = document.getElementById('pot')
+    thePot.innerText = "Total Pot: $" + localVars.table_bet
+
+
     // remove other players
     var opponents_section = document.getElementById("opponents")
     while (opponents_section.firstChild) {
         opponents_section.removeChild(opponents_section.firstChild);
     }
 
-    // got our index
-    var ourIndex = -1;
-    for (var i = 0; i < turnPath.length; i++){
-        if (turnPath[i][1] == socket.id){
-            ourIndex = i;
+    // get our index
+    
+    if (indexAllreadyFound == false){
+        for (var i = 0; i < turnPath.length; i++){
+            if (turnPath[i][1] == socket.id){
+                ourIndex = i;
+            }
         }
+        indexAllreadyFound = true
     }
+
+    console.log("ourIndex", ourIndex)
 
     // repopulate players
     for(socket.id in allPlayers){
         // skip ourself
-        if (allPlayers[socket.id]["name"] == ourName) {
+        if (socket.id == ourSocketId) {
+            var myMoney = document.getElementById('my-money')
+            var myBet = document.getElementById('my-bet')
+            myMoney.innerText= "Total Winnings: $" + allPlayers[socket.id].total_money
+            myBet.innerText = "Bet Amount: $" + allPlayers[socket.id].current_bet
             continue;
         }
         var opponentHTML =
@@ -73,8 +89,8 @@ socket.on('turnStart', function(arg, globalVars, turns) {
                 "<div class='player-info-container'>"+
                     "<div class='player-info-box'>"+
                         "<a class='player-name'>"+allPlayers[socket.id]["name"]+"</a>"+
-                        "<span class='money-made'>Total Winnings: $0</span>"+
-                        "<span class='bet-amount'>Bet Amount: $0</span>"+
+                        "<span class='money-made'>Total Winnings: $" + allPlayers[socket.id].total_money +"</span>"+
+                        "<span class='bet-amount'>Bet Amount: $" +allPlayers[socket.id].current_bet + "</span>"+
                     "</div>"+
                 "</div>"+
             "</div>"+
@@ -84,12 +100,13 @@ socket.on('turnStart', function(arg, globalVars, turns) {
         if (allPlayers[socket.id]["is_turn"]){
             newOpponent.childNodes[0].classList.add("green")
         }
+        if(allPlayers[socket.id]["is_folded"]){
+            newOpponent.childNodes[0].classList.add('red')
+        }
         opponents_section.appendChild(newOpponent)
     }
 
     // Shift the elements so that the next player is always on our left
-
-
     // Get the first m child elements
     var firstMChildren = Array.from(opponents_section.children).slice(0, ourIndex);
     firstMChildren.forEach(child => opponents_section.removeChild(child));
@@ -98,6 +115,8 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     // Display ourself
     var ourHand = document.getElementsByClassName("own-name")
     ourHand[0].innerText = ourName
+
+    
 
     // Remove Call, Raise, Fold buttons if it is not our turn
     var callButton = document.getElementById("call-button")
@@ -108,7 +127,7 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     raiseButton.classList.remove("hidden");
     foldButton.classList.remove("hidden");
     for (socket.id in allPlayers){
-        if (allPlayers[socket.id]["name"] == ourName) {
+        if (socket.id == ourSocketId) {
             if (allPlayers[socket.id]["is_turn"] == false){
                 // add "hidden" class from each of these elements
                 callButton.classList.add("hidden");
@@ -122,55 +141,84 @@ socket.on('turnStart', function(arg, globalVars, turns) {
     // Make ourself green if its our turn
     var ourPlayer = document.getElementsByClassName("person-player player")
     ourPlayer[0].classList.remove("green")
+    ourPlayer[0].classList.remove('red')
     for (socket.id in allPlayers){
-        if (allPlayers[socket.id]["name"] == ourName) {
+        if (socket.id == ourSocketId) {
+
+            var img1 = document.getElementById('mc1')
+            var img2 = document.getElementById('mc2')
+
+            img1.src = allPlayers[socket.id].hand_img[0]
+            img2.src = allPlayers[socket.id].hand_img[1]
+
+
+
+
             if (allPlayers[socket.id]["is_turn"]){
                 ourPlayer[0].classList.add("green")
             }
-        }
-    }
-
-
-
-
-    if (allPlayers[socket.id].is_playing){
-        //Display their own cards, otherwise leave the backs showing
-    }
-     
-    for (var i = 0; i < turnPath.length; i++){
-        if (allPlayers[turnPath[i][1]].is_playing){
-            if (allPlayers[turnPath[i][1]].is_turn){
-                //If it is their turn, highlight their background green or do something to indicate it!
+            if(allPlayers[socket.id]["is_folded"]){
+                ourPlayer[0].classList.add('red')
             }
-
-            //Display the amount each player has bet, total amount left, other info, ect.
-
+        }
+    }
+    if (localVars.game_progress === 'pre-flop'){
+        var centerImgs = document.getElementsByClassName('card')
+        for (let i =0 ;i < 5; i++){
+            centerImgs[i].src = 'card-back.png'
         }
     }
 
-    //Graphical information should update, player who's turn it is should be highlighted
-    if (localVars.game_progess === 'pre-flop'){
-         //display no cards
-    }
-    else if (localVars.game_progess === 'flop'){
+    if (localVars.game_progress === 'flop'){
+   
+        var centerImgs = document.getElementsByClassName('card')
+        for (i = 0; i < 3; i++){
+            centerImgs[i].src = localVars.center_img[i]
+        }
+        
          //display 3 cards
     }
-    else if (localVars.game_progess === 'turn'){
+    if (localVars.game_progress === 'turn'){
          //display 4 cards
+         var centerImgs = document.getElementsByClassName('card')
+        for (i = 0; i < 4; i++){
+            centerImgs[i].src = localVars.center_img[i]
+        }
     }
-    else if (localVars.game_progess === 'river'){
+    if (localVars.game_progress === 'river'){
          //display 5 cards
+         var centerImgs = document.getElementsByClassName('card')
+        for (i = 0; i < 5; i++){
+            centerImgs[i].src = localVars.center_img[i]
+        }
     } 
-    if (localVars.currentPlayer === socket.id){
-         // Unhide the buttons, allow them to play
-    }
+    
 })
 
-callButton.addEventListener('click', function(){  
-    console.log(socket.id)
-    //Set turn to false
-    //allPlayers[socket.id].is_turn = false
-    //after checking, check to see if the game would end, if it does change the gameprogress var to 'declare-winner'
+callButton.addEventListener('click', function(){
+    for(socket.id in allPlayers){
+        if (socket.id == ourSocketId){
+
+            var difference = localVars.round_bet - allPlayers[socket.id].current_bet
+            console.log(difference)
+
+            if (allPlayers[socket.id].total_money >= difference){
+                allPlayers[socket.id].current_bet += difference
+                allPlayers[socket.id].total_money -= difference
+                allPlayers[socket.id].total_bet += difference
+                localVars.table_bet += difference
+            }
+            else {
+                localVars.table_bet += allPlayers[socket.id].total_money
+                allPlayers[socket.id].current_bet += allPlayers[socket.id].total_money
+                allPlayers[socket.id].total_bet += allPlayers[socket.id].total_money
+                allPlayers[socket.id].total_money = 0
+            }
+        }
+    }
+
+    console.log(turnPath)
+    
     socket.emit('turnEnd', allPlayers, localVars, turnPath)
 })
 raiseButton.addEventListener('click', function(){
@@ -187,13 +235,31 @@ raiseButton.addEventListener('click', function(){
 raiseAmount.addEventListener('keyup', function(event){
 
     if (event.keyCode === 13){
-        if (allPlayers[socket.id].total_money > 20){
-            allPlayers[socket.id].total_money = allPlayers[socket.id].total_money - 20
-            allPlayers[socket.id].current_bet = allPlayers[socket.id].current_bet + 20
-            
-    
-            socket.emit('turnEnd', allPlayers, localVars, turnPath)
-        } 
+
+        var raise = parseInt(raiseAmount.value)
+        
+
+        for (let i = 0; i < turnPath.length; i++){
+            if (allPlayers[turnPath[i][1]].name == ourName){
+                if (raise + allPlayers[turnPath[i][1]].current_bet <= localVars.round_bet){
+                    break
+                }
+                if (allPlayers[turnPath[i][1]].total_money >= raise){
+                    allPlayers[turnPath[i][1]].total_money -= raise
+                    allPlayers[turnPath[i][1]].total_bet += raise
+                    allPlayers[turnPath[i][1]].current_bet += raise
+                    localVars.table_bet += raise
+                    localVars.round_bet = raise 
+                    localVars.last_person_to_raise = i
+
+                    socket.emit('turnEnd', allPlayers, localVars, turnPath)
+                }
+            }
+        
+        }
+
+        
+        
     }
 })
 
@@ -210,7 +276,7 @@ document.getElementById('ready-button').addEventListener('click', function () {
             document.getElementById('ready-button').style.display = 'none';
 
             socket.emit('ready')
-            console.log('readied!')
+        
         } 
         else {
             alert('Please enter your name before readying up.');
@@ -221,17 +287,25 @@ document.getElementById('ready-button').addEventListener('click', function () {
     }
 });
 
-// function updateCardImages(playerId, card1, card2) {
-//     const card1Element = document.getElementById(`mc1_${playerId}`);
-//     const card2Element = document.getElementById(`mc2_${playerId}`);
+foldButton.addEventListener('click', function(){
+    for (let i = 0; i < turnPath.length; i++){
+        if (allPlayers[turnPath[i][1]].name == ourName){
+            allPlayers[turnPath[i][1]].is_folded = true
+            break
+        }
+        
+    }
+    socket.emit('turnEnd', allPlayers, localVars, turnPath)
 
-//     if (card1Element && card2Element) {
-//         card1Element.src = card1;
-//         card2Element.src = card2;
-//     }
-// }
+})
 
-// socket.on('updateCardImages', ({ playerId, card1, card2 }) => {
-//     updateCardImages(playerId, card1, card2);
-// });
 
+
+socket.on('restart', function(arg, globalVars, turns){
+    allPlayers = arg
+    localVars = globalVars
+    turnPath = turns
+
+    //Run the code to hide screen?
+    socket.emit('allready')
+})
