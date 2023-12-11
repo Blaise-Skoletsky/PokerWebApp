@@ -22,7 +22,12 @@ app.get('/', function (req, res) {
 
 // Serve client.js file
 app.get('/client.js', function (req, res) {
+
+
+   
     res.sendFile(path.join(__dirname, '/public/client.js'));
+
+
 });
 
 
@@ -330,6 +335,8 @@ io.on('connection', socket => {
         }
 
         delete socketKeys[socket.id]
+        //Code to reset game!!!
+
     })
 
 

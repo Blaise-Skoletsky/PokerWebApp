@@ -191,7 +191,8 @@ socket.on('turnStart', function(arg, globalVars, turns) {
         for (i = 0; i < 5; i++){
             centerImgs[i].src = localVars.center_img[i]
         }
-    } 
+    }
+
     
 })
 
@@ -268,6 +269,8 @@ document.getElementById('ready-button').addEventListener('click', function () {
     const playerNameInput = document.getElementById('player-name-input');
     const playerName = playerNameInput.value.trim();
     if (localVars.game_progress === 'lobby'){
+
+
         if (playerName !== '') {
             ourName = playerName;
             socket.emit('setPlayerName', playerName);
@@ -306,7 +309,7 @@ socket.on('restart', function(arg, globalVars, turns, winner){
     localVars = globalVars
     turnPath = turns
 
-    alert(winner + ' wins!')
+    alert(winner + ' had the best hand!')
 
     //Run the code to hide screen?
     socket.emit('allready')
