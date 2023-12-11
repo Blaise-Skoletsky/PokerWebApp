@@ -385,22 +385,26 @@ const result = evaluatePokerHand(cards);
 console.log(result);
 
 
-//player, hand, value
-//orders the winners into order of best hand desending. Assumes array passed in only has active players.
+//orders the winners into order of best hand desending.
 function winnerOrder(players){
+    for(let p = 0; p < players.length(); p++){
+        if(players[p].isPlaying === false){
+            players[p].hand[0] = 0;
+        }
+    }
     for(let i = 1; i < players.length(); i++){
         let current = players[i];
         let j = i - 1;
         while(j >= 0 && players[j].hand[0] < current.hand[0]){
-            if(players[j].hand[0] === current.hand[0]){         //check if the hands are the same. If they are goes through cards until one is higher. Add 1 to the win value of the higher card.
-                for(let k = 2; k < 7; k++){                     //have win value go up by 10
+            if(players[j].hand[0] === current.hand[0] && players[j].hand[0] > 0){         //check if the hands are the same. If they are goes through cards until one is higher. Add 1 to the win value of the higher card.
+                for(let k = 1; k < 6; k++){                     //have win value go up by 10
                     if(player[j].hand[k] > current.hand[k]){    
                         player[j].hand[0] += 1;
-                        continue;
+                        break;
                     }
                     else if(player[j].hand[k] < current.hand[k]){
                         current.hand[0] += 1;
-                        continue;
+                        break;
                     }
                 }
             }
@@ -412,43 +416,43 @@ function winnerOrder(players){
     return players;
 }
 
-//takes ordered players array and the potsize in order to distribute each players winnings
-function distributePot(players, potSize){
-    let i = 0;
-    let length = players.length();
-    while(potSize > 0){                     //while pot size is greater than 0, pot is distrubuted
-        if(player[i].hand[0] != player[i+1].hand[0]){        
-            let winnings = player[i].current_bet * (length - i);
-            player[i].total_money += winnings;
-            if(winnings <= potSize){
-            potSize -= winnings;
-            i++;
-            }
-            else{
-                winnings = potSize;
-                potSize -= winnings;
-                i++;
+function distributePot(players){
+    for(let i = 0; i < players.length(); i++){
+        if(players[i].hand[0] != players[i+1].hand[0] && players[i].hand[0] > 0){ //runs through all players still in the game
+            let savedBet = players[i].bet;                                        
+            for(let j = i+1; j < players.length(); j++){                            //runs through players whose money needs to be distibuted
+                if(savedBet <= players[j].bet){                                  //Checks whose bet was higher
+                    players[j].bet -= savedBet;
+                    players[i].bet += savedBet                              //subtracts amount lost from current bet
+                }
+                else{
+                    players[j].bet = 0;
+                    players[i].bet += players[j].bet;
+                }
             }
         }
-        else{
+        else if(players[i].hand[0] === players[i+1].hand[0] && players[i].hand[0] > 0){
             let firstTied = i;
             let numTied = 0;
 
             while(players[i].hand[0] === players[i+1].hand[0]){
                 numTied++;
-                players[i].total_money += players[i].current_bet;   //adds back each players bet
-                potSize -= players[i].total_money                   //after money is distrubuted to return bets check to see if a player has a higher bet than the tied betters. If so give them the remainder, if not split it. 
-                i++;
+                i++;                
+        }
+        //add each players bet/numtied to each of the ties players
+        for(let q = firstTied; q <= numTied; q++){
+            let savedBet = players[q].bet;                                        
+            for(let t = t+1; t < players.length(); t++){                            //runs through players whose money needs to be distibuted
+                if(savedBet <= players[t].bet){                                  //Checks whose bet was higher
+                    players[t].bet -= (savedBet)/numTied;
+                    players[q].bet += (players[t].bet)/numTied;                     //subtracts amount lost from current bet
+                }
+                else{
+                    players[t].bet -= (players[t].bet)/numTied;
+                    players[q].bet += (players[t].bet)/numTied;
+                }
             }
-
-            for(let j = firstTied; j < numTied+firstTied; j++){
-                players[j].total_money = potSize/((numTied+firstTied)-j);
-                potSize -= potSize/((numTied+firstTied)-j);
-            } 
         }
     }
-
-
-
-
+}
 }
