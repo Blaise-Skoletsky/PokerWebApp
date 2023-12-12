@@ -328,16 +328,18 @@ io.on('connection', socket => {
 
 
             if (globalVars.game_progress  === 'done'){
-                //Run lukes code to distribute money. Also need to design restart socket
                 let players = []
+                let winner = ''
                 for (let z = 0; z < turnPath.length; z++){
                     socketKeys[turnPath[z][1]].best_hand = poker.evaluatePokerHand([socketKeys[turnPath[z][1]].hand[0], socketKeys[turnPath[z][1]].hand[1], globalVars.center[0], globalVars.center[1], globalVars.center[2], globalVars.center[3], globalVars.center[4]])
-                    players = [socketKeys[turnPath[z][1]]]
+                    players.push(socketKeys[turnPath[z][1]]) 
                 }
                 
                 players = poker.winnerOrder(players)
                 console.log(players)
                 players = poker.distributePot(players)
+
+                winner = players[0].name
                 
                 for (let y = 0; y < turnPath.length; y++){
                     for(let x = 0; x < players.length; x++){
@@ -346,8 +348,9 @@ io.on('connection', socket => {
                         }
                     }
                 }
+                reset()
 
-                io.emit('restart', socketKeys, globalVars, turnPath)
+                io.emit('restart', socketKeys, globalVars, turnPath, winner)
             }
             else {
                 io.emit('turnStart', socketKeys, globalVars, turnPath)
