@@ -268,8 +268,8 @@ raiseAmount.addEventListener('keyup', function(event){
 document.getElementById('ready-button').addEventListener('click', function () {
     const playerNameInput = document.getElementById('player-name-input');
     const playerName = playerNameInput.value.trim();
+    
     if (localVars.game_progress === 'lobby'){
-
 
         if (playerName !== '') {
             ourName = playerName;
