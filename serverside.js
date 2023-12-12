@@ -113,6 +113,11 @@ io.on('connection', socket => {
         for (let i = 0; i < turnPath.length; i++){
             turnPath[i][0] = i
         }
+        if (globalVars.game_progress === 'lobby'){
+            socket.emit('unhide')
+        }
+        
+
     }
 
 
@@ -363,7 +368,7 @@ io.on('connection', socket => {
                 }
                   
 
-                io.emit('restart', socketKeys, globalVars, turnPath)
+                io.emit('restart', socketKeys, globalVars, turnPath, players[0].name)
             }
             else {
                 for (let z = 0; z < turnPath.length; z++){
@@ -407,6 +412,9 @@ io.on('connection', socket => {
 
         delete socketKeys[socket.id]
         //Code to reset game!!!
+
+     
+       
 
     })
 

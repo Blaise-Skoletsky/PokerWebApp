@@ -313,6 +313,16 @@ socket.on('restart', function(arg, globalVars, turns, winner){
 
     alert(winner + ' had the best hand!')
 
+    
+
     //Run the code to hide screen?
     socket.emit('allready')
+})
+
+socket.on('unhide', function(){
+    var rBut = document.getElementById('ready-button')
+    var rBar = document.getElementById('player-name-input')
+    rBut.classList.remove('hidden')
+    rBar.classList.remove('hidden')
+
 })
