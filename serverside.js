@@ -418,15 +418,20 @@ function reset(){
     //Code to go back to lobby maybe? 
 }
 
-function savePlayerTotalMoneyInJSON(name, total_money){
+function savePlayerToJSON(name){
+    var total_money = 0;
+    socketKeys.forEach(function(socket){
+        if (socket.name.toLowerCase() == name.toLowerCase()){
+            total_money = socket.total_money
+        }
+    })
+    
     var playerData = require("./playerData.json")
-
     playerData.forEach(function(player){
         if (player.name.toLowerCase() == name.toLowerCase()){
             player.score = total_money
         }
     })
-
     fs.writeFileSync("./playerData.json", JSON.stringify(playerData, null, 2))
 }
 
