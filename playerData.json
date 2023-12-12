@@ -9,15 +9,15 @@
   },
   {
     "name": "1",
-    "score": 1160
+    "score": 1120
   },
   {
     "name": "3",
-    "score": 670
+    "score": 630
   },
   {
     "name": "2",
-    "score": 390
+    "score": 350
   },
   {
     "name": "a",
@@ -33,7 +33,7 @@
   },
   {
     "name": "4",
-    "score": 410
+    "score": 370
   },
   {
     "name": "d",
@@ -46,5 +46,17 @@
   {
     "name": "f",
     "score": 480
+  },
+  {
+    "name": "5",
+    "score": 600
+  },
+  {
+    "name": "6",
+    "score": 460
+  },
+  {
+    "name": "7",
+    "score": 460
   }
 ]
