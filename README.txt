@@ -30,3 +30,5 @@
 The round ends when it becomes the turn of the person who raised last. Normally this isn't an issue, as the playe
 
 //Make last player to raise start at null, if it equals null, then the program knows to stop after the big blind on round 1, and the starter on rounds 2-end.
+
+At the beginning of a round, if we get to the bigblind, or player before smallblind, and we haven't raised yet, go to next round!
