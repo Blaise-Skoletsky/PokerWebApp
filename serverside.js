@@ -76,7 +76,8 @@ io.on('connection', socket => {
                                 'is_turn': false, //Currently have buttons showing, can make a move
                                 'inskip': false, // if true, means they are still in the game, but have no money, so they should be skipped in the turn order.
                                 'hand': [null],
-                                'hand_img': []}
+                                'hand_img': [],
+                                'best_hand:': []}
 
         turnPath.push([0, socket.id])
         for (let i = 0; i < turnPath.length; i++){
@@ -291,11 +292,24 @@ io.on('connection', socket => {
 
 
             if (globalVars.game_progress  === 'done'){
-            
-
-            
-            
                 //Run lukes code to distribute money. Also need to design restart socket
+                let players = []
+                for (let z = 0; z < turnPath.length; z++){
+                    socketKeys[turnPath[z][1]].best_hand = poker.evaluatePokerHand(socketKeys[turnPath[z][1]].hand, globalVars.center)
+                    players = [socketKeys[turnPath[z][1]]]
+                }
+                
+                players = poker.winnerOrder(players)
+                players = poker.distributePot(players)
+                
+                for (let y = 0; y < turnPath.length; y++){
+                    for(let x = 0; x < players.length; x++){
+                        if(socketKeys[turnPath[y][1]].name === players[x].name){
+                            socketKeys[turnPath[y][1]].total_money = players[x].total_money
+                        }
+                    }
+                }
+
                 io.emit('restart', socketKeys, globalVars, turnPath)
             }
             else {
@@ -359,6 +373,7 @@ function reset(){
         socketKeys[turnPath[z][1]].inskip = false
         socketKeys[turnPath[z][1]].hand = [null]
         socketKeys[turnPath[z][1]].hand_img = []
+        socketKeys[turnPath[z][1]].best_hand = [null]
     }
 
     start = false

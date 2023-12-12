@@ -400,73 +400,80 @@ console.log(result);
 
 
 //orders the winners into order of best hand desending.
-function winnerOrder(players){
-    for(let p = 0; p < players.length(); p++){
-        if(players[p].isPlaying === false){
-            players[p].hand[0] = 0;
+function winnerOrder(players) {
+    players.forEach(player => {
+        if (player.is_folded) {
+            player.best_hand[0] = 0;
         }
-    }
-    for(let i = 1; i < players.length(); i++){
-        let current = players[i];
-        let j = i - 1;
-        while(j >= 0 && players[j].hand[0] < current.hand[0]){
-            if(players[j].hand[0] === current.hand[0] && players[j].hand[0] > 0){         //check if the hands are the same. If they are goes through cards until one is higher. Add 1 to the win value of the higher card.
-                for(let k = 1; k < 6; k++){                     //have win value go up by 10
-                    if(player[j].hand[k] > current.hand[k]){    
-                        player[j].hand[0] += 1;
-                        break;
-                    }
-                    else if(player[j].hand[k] < current.hand[k]){
-                        current.hand[0] += 1;
-                        break;
-                    }
-                }
+    });
+
+    players.sort((a, b) => {
+        if (a.best_hand[0] !== b.best_hand[0]) {
+            return b.best_hand[0] - a.best_hand[0];
+        }
+
+      if (!a.is_folded && !b.is_folded) {
+    for (let k = 1; k < 6; k++) {
+        if (a.best_hand[k][0] !== b.best_hand[k][0]) {
+            if (a.best_hand[k][0] < b.best_hand[k][0]){
+                b.best_hand[0]++;
             }
-            players[j+1] = players[j];
-            j--;
+            else if(a.best_hand[k][0] > b.best_hand[k][0]){
+                a.best_hand[0]++;
+            }
+            return b.best_hand[k][0] - a.best_hand[k][0];
         }
-        players[j + 1].hand[0] = currentElement;
     }
+}
+        return 0;
+    });
+
     return players;
 }
 
-function distributePot(players){
-    for(let i = 0; i < players.length(); i++){
-        if(players[i].hand[0] != players[i+1].hand[0] && players[i].hand[0] > 0){ //runs through all players still in the game
-            let savedBet = players[i].bet;                                        
-            for(let j = i+1; j < players.length(); j++){                            //runs through players whose money needs to be distibuted
-                if(savedBet <= players[j].bet){                                  //Checks whose bet was higher
-                    players[j].bet -= savedBet;
-                    players[i].bet += savedBet                              //subtracts amount lost from current bet
-                }
-                else{
-                    players[j].bet = 0;
-                    players[i].bet += players[j].bet;
+function distributePot(players) {
+    for (let i = 0; i < players.length - 1; i++) {
+        if (players[i].best_hand[0] !== players[i + 1].best_hand[0] && players[i].is_folded === false) {
+            let savedBet = players[i].total_bet;
+            for (let j = i + 1; j < players.length; j++) {
+                if (savedBet <= players[j].total_bet) {
+                    players[j].total_bet -= savedBet;
+                    players[i].total_bet += savedBet;
+                } else {
+                    players[j].total_bet = 0;
+                    players[i].total_bet += players[j].total_bet;
                 }
             }
-        }
-        else if(players[i].hand[0] === players[i+1].hand[0] && players[i].hand[0] > 0){
-            let firstTied = i;
-            let numTied = 0;
+            //distributes ties
+        // Check for ties in the win strength values
+    } else if (players[i].best_hand[0] === players[i + 1].best_hand[0] && players[i].best_hand[0] > 0) {
+    let firstTied = i;
+    let numTied = 1;
 
-            while(players[i].hand[0] === players[i+1].hand[0]){
-                numTied++;
-                i++;                
-        }
-        //add each players bet/numtied to each of the ties players
-        for(let q = firstTied; q <= numTied; q++){
-            let savedBet = players[q].bet;                                        
-            for(let t = t+1; t < players.length(); t++){                            //runs through players whose money needs to be distibuted
-                if(savedBet <= players[t].bet){                                  //Checks whose bet was higher
-                    players[t].bet -= (savedBet)/numTied;
-                    players[q].bet += (players[t].bet)/numTied;                     //subtracts amount lost from current bet
-                }
-                else{
-                    players[t].bet -= (players[t].bet)/numTied;
-                    players[q].bet += (players[t].bet)/numTied;
-                }
-            }
+    // Count the number of tied players
+    while (i + 1 < players.length && players[i].best_hand[0] === players[i + 1].best_hand[0]) {
+        numTied++;
+        i++;
+    }
+
+    // Distribute bets among tied players
+    for (let q = firstTied; q <= i; q++) {
+        let savedBet = players[q].total_bet;
+
+        // Distribute the saved bet among players with higher total bets
+        for (let t = q + numTied; t < players.length; t++) {
+            let redistribution = Math.min(savedBet / numTied, players[t].total_bet);
+            players[t].total_bet -= redistribution;
+            players[q].total_bet += redistribution;
+            numTied--;
         }
     }
 }
+    }
+
+    for (let i = 0; i < players.length; i++) {
+        players[i].total_money += players[i].total_bet;
+        players[i].total_bet = 0;
+    }
+    return players;
 }
