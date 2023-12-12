@@ -253,6 +253,8 @@ raiseAmount.addEventListener('keyup', function(event){
                     localVars.round_bet = raise 
                     localVars.last_person_to_raise = i
 
+                    
+
                     socket.emit('turnEnd', allPlayers, localVars, turnPath)
                 }
             }
@@ -270,7 +272,7 @@ document.getElementById('ready-button').addEventListener('click', function () {
     const playerName = playerNameInput.value.trim();
     
     if (localVars.game_progress === 'lobby'){
-
+    
         if (playerName !== '') {
             ourName = playerName;
             socket.emit('setPlayerName', playerName);
