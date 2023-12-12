@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const socketIo = require('socket.io');
+const fs = require('fs')
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -67,6 +68,29 @@ io.on('connection', socket => {
 
     // set player name on ready up
     socket.on('setPlayerName', function(name){
+        var playerData = require("./playerData.json")
+        console.log("== playerData: ", playerData)
+        
+        // load in total_money from JSON file
+        var playerAllreadyExists = false
+        playerData.forEach(function(player){
+            if (player.name.toLowerCase() == name.toLowerCase()){
+                socketKeys[socket.id].total_money = player.score
+                playerAllreadyExists = true
+            }
+        })
+
+        // create a new player in JSON file if not allready in there
+        if (!playerAllreadyExists){
+            var newPlayer = {
+                "name": name.toLowerCase(),
+                "score": 500,
+            }
+            playerData.push(newPlayer)
+            fs.writeFileSync("./playerData.json", JSON.stringify(playerData, null, 2))
+            console.log("New player added:", newPlayer)
+        }
+
         socketKeys[socket.id]['name'] = name
     })
 
@@ -393,3 +417,16 @@ function reset(){
     start = false
     //Code to go back to lobby maybe? 
 }
+
+function savePlayerTotalMoneyInJSON(name, total_money){
+    var playerData = require("./playerData.json")
+
+    playerData.forEach(function(player){
+        if (player.name.toLowerCase() == name.toLowerCase()){
+            player.score = total_money
+        }
+    })
+
+    fs.writeFileSync("./playerData.json", JSON.stringify(playerData, null, 2))
+}
+
