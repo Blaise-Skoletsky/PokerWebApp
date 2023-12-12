@@ -249,7 +249,7 @@ io.on('connection', socket => {
 
                         socketKeys[turnPath[i][1]].is_turn = false
                     
-                        for (let x = 1; x < turnPath.length; x++){
+                        for (let x = 0; x < turnPath.length; x++){
                             const nextPlayerIndex = (globalVars.smallblind + x) % turnPath.length
                             if (!socketKeys[turnPath[nextPlayerIndex][1]].is_folded){
                                 socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
