@@ -71,9 +71,41 @@
      console.log('start')
  })
 
+<<<<<<< Updated upstream
 foldButton.addEventListener('click', function(){
     allPlayers[socket.id].is_folded = true
     allPlayers[socket.id].is_turn = false
+=======
+    
+})
+
+callButton.addEventListener('click', function(){
+    for(socket.id in allPlayers){
+        if (socket.id == ourSocketId){
+
+            var difference = localVars.round_bet - allPlayers[socket.id].current_bet
+            console.log(difference)
+
+            if (allPlayers[socket.id].total_money >= difference){
+                allPlayers[socket.id].current_bet += difference
+                allPlayers[socket.id].total_money -= difference
+                allPlayers[socket.id].total_bet += difference
+                localVars.table_bet += difference
+            }
+            else {
+                localVars.table_bet += allPlayers[socket.id].total_money
+                allPlayers[socket.id].current_bet += allPlayers[socket.id].total_money
+                allPlayers[socket.id].total_bet += allPlayers[socket.id].total_money
+                allPlayers[socket.id].total_money = 0
+            }
+        }
+    }
+
+    localVars.num_call++
+
+    console.log(turnPath)
+    
+>>>>>>> Stashed changes
     socket.emit('turnEnd', allPlayers, localVars, turnPath)
 })
 

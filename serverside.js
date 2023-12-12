@@ -41,9 +41,14 @@ let globalVars = {'smallblind': -1,
                   'current_player': 0, 
                   'last_person_to_raise': 0,
                   'center': [],
+<<<<<<< Updated upstream
                   'center-img': [],
                 }
 
+=======
+                  'center_img': [],
+                  'num_call': 0}
+>>>>>>> Stashed changes
 
 
 //Array for turn paths! Every game should shift by 1: each index is [turn1, socket]
@@ -173,6 +178,7 @@ io.on('connection', socket => {
                         socketKeys[turnPath[j][1]].is_turn = false
                     }
                 }
+<<<<<<< Updated upstream
 
                 if (turnPath[i][0] === globalVars.bigblind){
                     if (turnPath[i][0] === globalVars.bigblind) {
@@ -180,6 +186,95 @@ io.on('connection', socket => {
                 
                         socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
                         break
+=======
+             
+                var inter = 0
+                for (let i = 0; i < turnPath.length;i++ ){
+                
+                    if (!socketKeys[turnPath[i][1]].is_folded){
+                        inter++
+                    }
+                }
+                
+                for (let i = 0; i < turnPath.length; i++){
+                    if ((socketKeys[turnPath[i][1]].is_turn)){
+                        if (globalVars.last_person_to_raise === i || globalVars.num_call === inter){
+                            globalVars.num_call = 0
+
+                            socketKeys[turnPath[i][1]].is_turn = false
+                        
+                            for (let x = 1; x < turnPath.length; x++){
+                                const nextPlayerIndex = (globalVars.smallblind + x) % turnPath.length
+                                if (!socketKeys[turnPath[nextPlayerIndex][1]].is_folded){
+                                    socketKeys[turnPath[nextPlayerIndex][1]].is_turn = true
+                                    globalVars.last_person_to_raise = nextPlayerIndex
+                                    break
+                                }
+                            }
+                        
+                        
+                            if (globalVars.game_progress === 'pre-flop'){
+                                globalVars.game_progress = 'flop'
+                            
+                                globalVars.round_bet = 0
+                            
+                                for (j = 0; j < turnPath.length; j++){
+                                    socketKeys[turnPath[j][1]].current_bet = 0
+                                }
+                            }
+                            else if (globalVars.game_progress === 'flop'){
+                                globalVars.game_progress = 'turn'
+                            
+                                globalVars.round_bet = 0
+                            
+                                for (j = 0; j < turnPath.length; j++){
+                                    socketKeys[turnPath[j][1]].current_bet = 0
+                                }
+                            }
+                            else if (globalVars.game_progress === 'turn'){
+                                globalVars.game_progress = 'river'
+                            
+                                globalVars.round_bet = 0
+                            
+                                for (j = 0; j < turnPath.length; j++){
+                                    socketKeys[turnPath[j][1]].current_bet = 0
+                                }
+                            }
+                            else if (globalVars.game_progress === 'river'){
+                                globalVars.game_progress = 'done'
+                            
+                                globalVars.round_bet = 0
+                            
+                                for (j = 0; j < turnPath.length; j++){
+                                    socketKeys[turnPath[j][1]].current_bet = 0
+                                }
+                            }
+                        
+                            break
+                        
+                        }
+                    }
+            }
+
+
+
+            if (globalVars.game_progress  === 'done'){
+                //Run lukes code to distribute money. Also need to design restart socket
+                let players = []
+                for (let z = 0; z < turnPath.length; z++){
+                    socketKeys[turnPath[z][1]].best_hand = poker.evaluatePokerHand(socketKeys[turnPath[z][1]].hand, globalVars.center)
+                    players = [socketKeys[turnPath[z][1]]]
+                }
+                
+                players = poker.winnerOrder(players)
+                players = poker.distributePot(players)
+                
+                for (let y = 0; y < turnPath.length; y++){
+                    for(let x = 0; x < players.length; x++){
+                        if(socketKeys[turnPath[y][1]].name === players[x].name){
+                            socketKeys[turnPath[y][1]].total_money = players[x].total_money
+                        }
+>>>>>>> Stashed changes
                     }
                 }
                 socketKeys[turnPath[i][1]].is_turn = false

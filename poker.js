@@ -6,7 +6,14 @@ module.exports = {
     generateDeck: generateDeck,
     centerGenerator: centerGenerator,
     playerHandGenerator: playerHandGenerator,
+<<<<<<< Updated upstream
     evaluatePokerHand: evaluatePokerHand
+=======
+    getImage: getImage,
+    winnerOrder: winnerOrder,
+    distributePot: distributePot,
+    evaluatePokerHand, evaluatePokerHand
+>>>>>>> Stashed changes
 }
 
 function cardConversion(value){
