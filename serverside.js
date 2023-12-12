@@ -240,6 +240,13 @@ io.on('connection', socket => {
             }
             reset()
 
+            for (let z = 0; z < turnPath.length; z++){
+                savePlayerToJSON(socketKeys[turnPath[z][1]].name)
+                if (socketKeys[turnPath[z][1]].total_money == 0){
+                    socketKeys[turnPath[z][1]].total_money = 500
+                }
+            }  
+
             io.emit('restart', socketKeys, globalVars, turnPath, winner)
 
             
@@ -350,9 +357,25 @@ io.on('connection', socket => {
                 }
                 reset()
 
+                for (let z = 0; z < turnPath.length; z++){
+                    savePlayerToJSON(socketKeys[turnPath[z][1]].name)
+                    if (socketKeys[turnPath[z][1]].total_money == 0){
+                        socketKeys[turnPath[z][1]].total_money = 500
+                    }  
+    
+                }
+                  
+
                 io.emit('restart', socketKeys, globalVars, turnPath, winner)
             }
             else {
+                for (let z = 0; z < turnPath.length; z++){
+                    savePlayerToJSON(socketKeys[turnPath[z][1]].name)
+                
+                } 
+                
+                
+
                 io.emit('turnStart', socketKeys, globalVars, turnPath)
             }
 
@@ -376,6 +399,8 @@ io.on('connection', socket => {
 
     //Removes a socket when page is refreshed or closed. 
     socket.on('disconnect', function(){
+
+    
         for (let i = 0; i < turnPath.length; i++){
             if (turnPath[i][1] === socket.id){
 
@@ -424,15 +449,21 @@ function reset(){
 
 function savePlayerToJSON(name){
     var total_money = 0;
-    socketKeys.forEach(function(socket){
-        if (socket.name.toLowerCase() == name.toLowerCase()){
-            total_money = socket.total_money
+
+    for (socket in socketKeys){
+        if (socketKeys[socket].name.toLowerCase() == name.toLowerCase()){
+            total_money = socketKeys[socket].total_money
         }
-    })
+    }
+
     
     var playerData = require("./playerData.json")
     playerData.forEach(function(player){
         if (player.name.toLowerCase() == name.toLowerCase()){
+            if (total_money <= 0){
+                total_money = 500
+            }
+
             player.score = total_money
         }
     })
