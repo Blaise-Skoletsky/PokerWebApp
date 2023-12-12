@@ -82,7 +82,8 @@ io.on('connection', socket => {
                                 'inskip': false, // if true, means they are still in the game, but have no money, so they should be skipped in the turn order.
                                 'hand': [null],
                                 'hand_img': [],
-                                'best_hand:': []}
+                                'best_hand:': [null]
+                            }
 
         turnPath.push([0, socket.id])
         for (let i = 0; i < turnPath.length; i++){
@@ -281,9 +282,8 @@ io.on('connection', socket => {
                         }
                         else if (globalVars.game_progress === 'river'){
                             globalVars.game_progress = 'done'
-                        
                             globalVars.round_bet = 0
-                        
+                            
                             for (j = 0; j < turnPath.length; j++){
                                 socketKeys[turnPath[j][1]].current_bet = 0
                             }
@@ -300,11 +300,12 @@ io.on('connection', socket => {
                 //Run lukes code to distribute money. Also need to design restart socket
                 let players = []
                 for (let z = 0; z < turnPath.length; z++){
-                    socketKeys[turnPath[z][1]].best_hand = poker.evaluatePokerHand(socketKeys[turnPath[z][1]].hand, globalVars.center)
+                    socketKeys[turnPath[z][1]].best_hand = poker.evaluatePokerHand([socketKeys[turnPath[z][1]].hand[0], socketKeys[turnPath[z][1]].hand[1], globalVars.center[0], globalVars.center[1], globalVars.center[2], globalVars.center[3], globalVars.center[4]])
                     players = [socketKeys[turnPath[z][1]]]
                 }
                 
                 players = poker.winnerOrder(players)
+                console.log(players)
                 players = poker.distributePot(players)
                 
                 for (let y = 0; y < turnPath.length; y++){

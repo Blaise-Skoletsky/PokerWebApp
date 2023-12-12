@@ -5,7 +5,8 @@ module.exports = {
     playerHandGenerator: playerHandGenerator,
     getImage: getImage,
     winnerOrder: winnerOrder,
-    distributePot: distributePot
+    distributePot: distributePot,
+    evaluatePokerHand: evaluatePokerHand
 }
 
 function cardConversion(value){
