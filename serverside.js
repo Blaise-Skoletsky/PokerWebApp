@@ -230,6 +230,13 @@ io.on('connection', socket => {
 
                                 break;
                             }
+                            else{
+                                if (globalVars.last_person_to_raise === nextPlayerIndex){
+                                    var circle = (globalVars.last_person_to_raise+1) % turnPath.length
+                                    globalVars.last_person_to_raise = circle
+                                }
+                                
+                            }
                         }
                         break;
                     }
