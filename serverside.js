@@ -22,7 +22,12 @@ app.get('/', function (req, res) {
 
 // Serve client.js file
 app.get('/client.js', function (req, res) {
+
+
+   
     res.sendFile(path.join(__dirname, '/public/client.js'));
+
+
 });
 
 
@@ -200,17 +205,17 @@ io.on('connection', socket => {
 
             //Do a win message!!
             //Game should end
-
+            var winner = ' '
 
             for (let i = 0; i < turnPath.length; i++){
                 if (!socketKeys[turnPath[i][1]].is_folded){
                     socketKeys[turnPath[i][1]].total_money += globalVars.table_bet
+                    winner = socketKeys[turnPath[i][1]].name
                 }
             }
-
             reset()
 
-            io.emit('restart', socketKeys, globalVars, turnPath)
+            io.emit('restart', socketKeys, globalVars, turnPath, winner)
 
             
         } else{
@@ -344,6 +349,8 @@ io.on('connection', socket => {
         }
 
         delete socketKeys[socket.id]
+        //Code to reset game!!!
+
     })
 
 

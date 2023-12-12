@@ -5,11 +5,7 @@
     <title>Poker</title>
     <script src="/socket.io/socket.io.js"></script>
     
-    <!-- I don't really understand the type="module" so I commented it out for now to test out the raise-button -->
     <script src="client.js" type="module" charset="utf-8" defer></script>
-    <!--<script src="client.js" charset="utf-8" defer></script>-->
-
-
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -26,21 +22,23 @@
         </section>
 
         <div class="table">
-            <img src="table.png" alt="Poker Table">
-            <div class="cards-on-table">
-                <div class = deck>
-                    <img src="card-back.png" alt="Deck of Cards">
-                    <img src="card-back.png" alt="Deck of Cards">
-                    <img src="card-back.png" alt="Deck of Cards">
-                    <img src="card-back.png" alt="Deck of Cards">
-                </div>
-                <img class="card" src="card-back.png" alt="Card 1">
-                <img class="card" src="card-back.png" alt="Card 2">
-                <img class="card" src="card-back.png" alt="Card 3">
-                <img class="card" src="card-back.png" alt="Card 4">
-                <img class="card" src="card-back.png" alt="Card 5">
-                <div class="total-pot-container">
-                    <p id="pot" class="total-pot"></p>
+            <div class="table-container">
+                <img src="table.png" alt="Poker Table">
+                <div class="cards-on-table">
+                    <div class="deck">
+                        <img src="card-back.png" alt="Deck of Cards">
+                        <img src="card-back.png" alt="Deck of Cards">
+                        <img src="card-back.png" alt="Deck of Cards">
+                        <img src="card-back.png" alt="Deck of Cards">
+                    </div>
+                    <img class="card" src="card-back.png" alt="Card 1">
+                    <img class="card" src="card-back.png" alt="Card 2">
+                    <img class="card" src="card-back.png" alt="Card 3">
+                    <img class="card" src="card-back.png" alt="Card 4">
+                    <img class="card" src="card-back.png" alt="Card 5">
+                    <div class="total-pot-container">
+                        <p id="pot" class="total-pot"></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -71,7 +69,6 @@
         
             <button id="ready-button">Ready Up</button>
         </div>
-        
     </main>
 </body>
 </html>
