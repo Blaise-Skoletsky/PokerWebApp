@@ -356,10 +356,12 @@ io.on('connection', socket => {
 
                 for (let z = 0; z < turnPath.length; z++){
                     savePlayerToJSON(socketKeys[turnPath[z][1]].name)
+                    if (socketKeys[turnPath[z][1]].total_money == 0){
+                        socketKeys[turnPath[z][1]].total_money = 500
+                    }  
+    
                 }
-                if (socketKeys[turnPath[z][1]].total_money == 0){
-                    socketKeys[turnPath[z][1]].total_money = 500
-                }  
+                  
 
                 io.emit('restart', socketKeys, globalVars, turnPath)
             }
