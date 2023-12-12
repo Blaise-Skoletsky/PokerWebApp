@@ -415,20 +415,20 @@ function winnerOrder(players) {
 
       if (!a.is_folded && !b.is_folded) {
     for (let k = 1; k < 6; k++) {
-        if (a.best_hand[k][0] !== b.best_hand[k][0]) {
-            if (a.best_hand[k][0] < b.best_hand[k][0]){
+        if (a.best_hand[k] !== b.best_hand[k]) {
+            if (a.best_hand[k] < b.best_hand[k]){
                 b.best_hand[0]++;
             }
-            else if(a.best_hand[k][0] > b.best_hand[k][0]){
+            else if(a.best_hand[k] > b.best_hand[k]){
                 a.best_hand[0]++;
             }
-            return b.best_hand[k][0] - a.best_hand[k][0];
+            return b.best_hand[k] - a.best_hand[k];
         }
     }
 }
         return 0;
     });
-
+    console.log(players)
     return players;
 }
 
