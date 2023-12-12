@@ -1,5 +1,3 @@
-
-
 [
   {
     "name": "alice",
@@ -11,15 +9,15 @@
   },
   {
     "name": "1",
-    "score": 1230
+    "score": 1160
   },
   {
     "name": "3",
-    "score": 460
+    "score": 670
   },
   {
     "name": "2",
-    "score": 460
+    "score": 390
   },
   {
     "name": "a",
@@ -35,7 +33,6 @@
   },
   {
     "name": "4",
-    "score": 480
+    "score": 410
   }
 ]
-

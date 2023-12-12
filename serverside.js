@@ -371,7 +371,7 @@ io.on('connection', socket => {
                 }
                   
 
-                io.emit('restart', socketKeys, globalVars, turnPath)
+                io.emit('restart', socketKeys, globalVars, turnPath, winner)
             }
             else {
                 for (let z = 0; z < turnPath.length; z++){
