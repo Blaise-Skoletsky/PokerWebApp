@@ -137,6 +137,13 @@ io.on('connection', socket => {
                 readyVal++
             }
         }
+        var nameArr = []
+        for(socket.id in socketKeys){
+            nameArr.push(socketKeys[socket.id].name)
+        }
+        console.log(nameArr)
+        io.emit('getInfoStart', nameArr)
+
         console.log("Ready Value: ", readyVal)
         if (readyVal === Object.keys(socketKeys).length && Object.keys(socketKeys).length >= 3){
             globalVars.game_progress = 'pre-flop'

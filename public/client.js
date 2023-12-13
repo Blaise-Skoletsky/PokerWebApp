@@ -16,6 +16,7 @@ const raiseAmount = document.getElementById("raise-amount");
 var allPlayers = {}
 var localVars = {'game_progress': 'lobby'}
 var turnPath = []
+var names = []
 //When any turn happens, this updates the variables: arg contains the dictionaries containing all information
 
 var ourName = '';
@@ -23,7 +24,13 @@ var ourSocketId = '';
 var ourIndex = -1;
 var indexAllreadyFound = false
 
+
+socket.on('getInfoStart', function(arg){
+    names = arg
+})
+
 socket.on('readyClicked', function(){
+    
     const playerControls = document.querySelector('.person-player.player .player-controls');
     playerControls.style.display = 'flex';
     const allPlayers = document.querySelectorAll('.player');
@@ -269,7 +276,16 @@ raiseAmount.addEventListener('keyup', function(event){
 
 document.getElementById('ready-button').addEventListener('click', function () {
     const playerNameInput = document.getElementById('player-name-input');
-    const playerName = playerNameInput.value.trim();
+    var playerName = playerNameInput.value.trim();
+    var dupe = false
+    
+    for(let i = 0; i < names.length; i++){
+        if (names[i].toLowerCase() == playerName.toLowerCase()){
+            playerName = ''
+        }
+    }
+
+    
     
     if (localVars.game_progress === 'lobby'){
     
@@ -284,7 +300,7 @@ document.getElementById('ready-button').addEventListener('click', function () {
         
         } 
         else {
-            alert('Please enter your name before readying up.');
+            alert('Please enter a valid name before readying up.');
         }
     }
     else {
