@@ -1,0 +1,66 @@
+[
+  {
+    "name": "alice",
+    "score": 1000000
+  },
+  {
+    "name": "triss",
+    "score": 1000000
+  },
+  {
+    "name": "1",
+    "score": 570
+  },
+  {
+    "name": "3",
+    "score": 150
+  },
+  {
+    "name": "2",
+    "score": 230
+  },
+  {
+    "name": "a",
+    "score": 280
+  },
+  {
+    "name": "b",
+    "score": 280
+  },
+  {
+    "name": "c",
+    "score": 880
+  },
+  {
+    "name": "4",
+    "score": 1030
+  },
+  {
+    "name": "d",
+    "score": 540
+  },
+  {
+    "name": "e",
+    "score": 480
+  },
+  {
+    "name": "f",
+    "score": 480
+  },
+  {
+    "name": "5",
+    "score": 660
+  },
+  {
+    "name": "6",
+    "score": 460
+  },
+  {
+    "name": "7",
+    "score": 460
+  },
+  {
+    "name": "11",
+    "score": 480
+  }
+]

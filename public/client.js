@@ -2,11 +2,127 @@
 
 
 //Might have to rename to socket. 
+<<<<<<< Updated upstream
  const socket = io('http://localhost:3000')
  var callButton = document.getElementById('call-button')
  var raiseButton = document.getElementById('raise-button')
  var foldButton = document.getElementById('fold-button')
  var tempStart = document.getElementById('temp')
+=======
+const socket = io('http://localhost:3000')
+var callButton = document.getElementById('call-button')
+var raiseButton = document.getElementById('raise-button')
+var foldButton = document.getElementById('fold-button')
+
+const raiseAmount = document.getElementById("raise-amount");
+
+//[Player Name(customizeable), Amount of money(before betting), currentBet, isTurn (boolean value), isPlaying (boolean value),hand(should be an array)
+//This is all information that is needed to display at every change in turn. 
+var allPlayers = {}
+var localVars = {'game_progress': 'lobby'}
+var turnPath = []
+//When any turn happens, this updates the variables: arg contains the dictionaries containing all information
+
+var ourName = '';
+var ourSocketId = '';
+var ourIndex = -1;
+var indexAllreadyFound = false
+
+socket.on('readyClicked', function(){
+    const playerControls = document.querySelector('.person-player.player .player-controls');
+    playerControls.style.display = 'flex';
+    const allPlayers = document.querySelectorAll('.player');
+    allPlayers.forEach(function (player) {
+        player.style.display = 'flex';
+    });
+
+    socket.emit('allready')
+    ourSocketId = socket.id
+    //console.log("== ourSocketId: ", ourSocketId)
+
+
+})
+
+socket.on('turnStart', function(arg, globalVars, turns) {
+    allPlayers = arg
+    localVars = globalVars
+    turnPath = turns
+    console.log(allPlayers)
+    console.log(localVars)
+
+    //display pot
+    var thePot = document.getElementById('pot')
+    thePot.innerText = "Total Pot: $" + localVars.table_bet
+
+
+    // remove other players
+    var opponents_section = document.getElementById("opponents")
+    while (opponents_section.firstChild) {
+        opponents_section.removeChild(opponents_section.firstChild);
+    }
+
+    // get our index
+    
+    if (indexAllreadyFound == false){
+        for (var i = 0; i < turnPath.length; i++){
+            if (turnPath[i][1] == socket.id){
+                ourIndex = i;
+            }
+        }
+        indexAllreadyFound = true
+    }
+
+    console.log("ourIndex", ourIndex)
+    var smallCount = 0
+    // repopulate players
+    for(socket.id in allPlayers){
+        
+        // skip ourself
+        if (socket.id == ourSocketId) {
+            var myMoney = document.getElementById('my-money')
+            var myBet = document.getElementById('my-bet')
+            myMoney.innerText= "Total Winnings: $" + allPlayers[socket.id].total_money
+            myBet.innerText = "Bet Amount: $" + allPlayers[socket.id].current_bet
+            continue;
+        }
+        var opponentHTML =
+        "<div class='opponent'>"+
+            "<div class='player-contents'>"+
+                "<div class='player-image-container'>"+
+                    "<img src='card-back.png' alt='Card 1'>"+
+                    "<img src='card-back.png' alt='Card 2'>"+
+                "</div>"+
+                "<div class='player-info-container'>"+
+                    "<div class='player-info-box'>"+
+                        "<a class='player-name'>"+allPlayers[socket.id]["name"]+"</a>"+
+                        "<span class='money-made'>Total Winnings: $" + allPlayers[socket.id].total_money +"</span>"+
+                        "<span class='bet-amount'>Bet Amount: $" +allPlayers[socket.id].current_bet + "</span>"+
+                    "</div>"+
+                "</div>"+
+            "</div>"+
+        "</div>"
+        var newOpponent = document.createElement('div')
+        newOpponent.innerHTML = opponentHTML
+        if (allPlayers[socket.id]["is_turn"]){
+            newOpponent.childNodes[0].classList.add("green")
+        }
+        if(allPlayers[socket.id]["is_folded"]){
+            newOpponent.childNodes[0].classList.add('red')
+        }
+        opponents_section.appendChild(newOpponent)
+ 
+    }
+
+    // Shift the elements so that the next player is always on our left
+    // Get the first m child elements
+    var firstMChildren = Array.from(opponents_section.children).slice(0, ourIndex);
+    firstMChildren.forEach(child => opponents_section.removeChild(child));
+    firstMChildren.forEach(child => opponents_section.appendChild(child));
+
+    // Display ourself
+    var ourHand = document.getElementsByClassName("own-name")
+    ourHand[0].innerText = ourName
+>>>>>>> Stashed changes
 
  //[Player Name(customizeable), Amount of money(before betting), currentBet, isTurn (boolean value), isPlaying (boolean value),hand(should be an array)
  //This is all information that is needed to display at every change in turn. 
@@ -170,13 +286,99 @@ raiseAmount.addEventListener('keyup', function(event){
 <<<<<<< Updated upstream
 =======
 document.getElementById('ready-button').addEventListener('click', function () {
+<<<<<<< Updated upstream
     var players = document.querySelectorAll('.player');
     players.forEach(function (player) {
         player.style.display = 'flex';
     });
     document.getElementById('ready-button').style.display = 'none';
+=======
+    const playerNameInput = document.getElementById('player-name-input');
+    const playerName = playerNameInput.value.trim();
+    
+    console.log(localVars.game_progress)
+
+    if (localVars.game_progress === 'lobby'){
+        
+        if (playerName !== '') {
+            ourName = playerName;
+            socket.emit('setPlayerName', playerName);
+>>>>>>> Stashed changes
 
     socket.emit('allready')
 });
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+foldButton.addEventListener('click', function(){
+    for (let i = 0; i < turnPath.length; i++){
+        if (allPlayers[turnPath[i][1]].name == ourName){
+            allPlayers[turnPath[i][1]].is_folded = true
+            break
+        }
+        
+    }
+    socket.emit('turnEnd', allPlayers, localVars, turnPath)
+
+})
+
+
+
+socket.on('restart', function(arg, globalVars, turns, winner){
+    allPlayers = arg
+    localVars = globalVars
+    turnPath = turns
+
+    alert(winner + ' had the best hand!')
+
+    
+
+    //Run the code to hide screen?
+    socket.emit('allready')
+})
+
+socket.on('unhide', function(){
+    var rBut = document.getElementById('ready-button')
+    var rBar = document.getElementById('player-name-input')
+    rBut.classList.remove('hidden')
+    rBar.classList.remove('hidden')
+
+})
+
+socket.on('restartScreen', function (){
+    var playerPic = document.getElementsByClassName('person-player player')
+    playerPic[0].style.display = 'none'
+    var rBut = document.getElementById('ready-button')
+    var rBar = document.getElementById('player-name-input')
+
+    //rBut.classList.remove('hidden')
+    //rBar.classList.remove('hidden')
+
+    rBut.style.display = 'inline-block'
+    rBar.style.display = 'inline-block'
+    
+    var thePot = document.getElementById('pot')
+    thePot.innerText = ""
+
+    var opponents_section = document.getElementById("opponents")
+    while (opponents_section.firstChild) {
+        opponents_section.removeChild(opponents_section.firstChild);
+    }
+
+    callButton.classList.add('hidden')
+    raiseButton.classList.add('hidden')
+    foldButton.classList.add('hidden')
+
+    
+
+    
+
+    
+
+
+
+
+
+})
 >>>>>>> Stashed changes

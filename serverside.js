@@ -64,6 +64,37 @@ let numPlayers = 0
 
 io.on('connection', socket => {
 
+<<<<<<< Updated upstream
+=======
+    // set player name on ready up
+    socket.on('setPlayerName', function(name){
+        var playerData = require("./playerData.json")
+        //console.log("== playerData: ", playerData)
+        
+        // load in total_money from JSON file
+        var playerAllreadyExists = false
+        playerData.forEach(function(player){
+            if (player.name.toLowerCase() == name.toLowerCase()){
+                socketKeys[socket.id].total_money = player.score
+                playerAllreadyExists = true
+            }
+        })
+
+        // create a new player in JSON file if not allready in there
+        if (!playerAllreadyExists){
+            var newPlayer = {
+                "name": name.toLowerCase(),
+                "score": 500,
+            }
+            playerData.push(newPlayer)
+            fs.writeFileSync("./playerData.json", JSON.stringify(playerData, null, 2))
+            //console.log("New player added:", newPlayer)
+        }
+
+        socketKeys[socket.id]['name'] = name
+    })
+
+>>>>>>> Stashed changes
     //On connection, socketID is mapped to the 
     if (!(socket.id in socketKeys)){
         socketKeys[socket.id] = {'name': 'temp', 
@@ -84,8 +115,8 @@ io.on('connection', socket => {
 
 
 
-    console.log(socketKeys)
-    console.log(turnPath)
+    //console.log(socketKeys)
+    //console.log(turnPath)
     
 
     //Function starts the game, once all players have said they are ready, it shoots off the first 'turnhappend' event to the client
@@ -267,6 +298,10 @@ io.on('connection', socket => {
                 }
                 
                 players = poker.winnerOrder(players)
+<<<<<<< Updated upstream
+=======
+                //console.log(players)
+>>>>>>> Stashed changes
                 players = poker.distributePot(players)
                 
                 for (let y = 0; y < turnPath.length; y++){
@@ -320,19 +355,39 @@ io.on('connection', socket => {
 
     //Removes a socket when page is refreshed or closed. 
     socket.on('disconnect', function(){
+<<<<<<< Updated upstream
+=======
+        
+    
+>>>>>>> Stashed changes
         for (let i = 0; i < turnPath.length; i++){
             if (turnPath[i][1] === socket.id){
 
-                turnPath = turnPath.filter(item => item && item[1] !== socket.id);
+                turnPath = turnPath.filter(item => item && item[1] !== socket.id);        
             }
         }
 
+
         delete socketKeys[socket.id]
+<<<<<<< Updated upstream
+=======
+
+        reset()
+
+
+        io.emit('restartScreen')
+     
+
+     
+       
+
+>>>>>>> Stashed changes
     })
 
 
 });
 
+<<<<<<< Updated upstream
 
 
 
@@ -340,3 +395,57 @@ io.on('connection', socket => {
 server.listen(port, () => {
     console.log(`Server started at http://localhost:${port}`);
 });
+=======
+server.listen(port, () => {
+    console.log(`Server started at http://localhost:${port}`);
+});
+
+
+
+function reset(){
+    globalVars.table_bet = 0
+    globalVars.round_bet = 0
+    globalVars.game_progress = 'lobby'
+    globalVars.current_player = 0
+    globalVars.last_person_to_raise = 2 
+    globalVars.center = []
+    globalVars.center_img = []
+
+    for (let z = 0; z < turnPath.length; z++){
+        socketKeys[turnPath[z][1]].current_bet = 0
+        socketKeys[turnPath[z][1]].is_folded = false
+        socketKeys[turnPath[z][1]].is_turn = false
+        socketKeys[turnPath[z][1]].inskip = false
+        socketKeys[turnPath[z][1]].hand = [null]
+        socketKeys[turnPath[z][1]].hand_img = []
+        socketKeys[turnPath[z][1]].best_hand = [null]
+    }
+
+    start = false
+
+}
+
+function savePlayerToJSON(name){
+    var total_money = 0;
+
+    for (socket in socketKeys){
+        if (socketKeys[socket].name.toLowerCase() == name.toLowerCase()){
+            total_money = socketKeys[socket].total_money
+        }
+    }
+
+    
+    var playerData = require("./playerData.json")
+    playerData.forEach(function(player){
+        if (player.name.toLowerCase() == name.toLowerCase()){
+            if (total_money <= 0){
+                total_money = 500
+            }
+
+            player.score = total_money
+        }
+    })
+    fs.writeFileSync("./playerData.json", JSON.stringify(playerData, null, 2))
+}
+
+>>>>>>> Stashed changes
