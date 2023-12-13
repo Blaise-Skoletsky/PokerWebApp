@@ -300,7 +300,7 @@ document.getElementById('ready-button').addEventListener('click', function () {
         
         } 
         else {
-            alert('Please enter a valid name before readying up.');
+            alert('This name is taken. Please enter a different name.');
         }
     }
     else {
