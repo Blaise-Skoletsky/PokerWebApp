@@ -216,7 +216,7 @@ function evaluatePokerHand(cards) {
         }
         return false
     }
-    //Function to check for a straight flush!- Almost done- right now it is possible for their to be a flush and a straight seperately, which would make the function not work. ALSO NEED TO MAKE ACE WORK!
+    //Function to check for a straight flush!
     if (isFlush() && isStraight()) {
 
         let cardset = {}
